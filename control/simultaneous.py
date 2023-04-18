@@ -2,6 +2,7 @@ import serial
 import sys
 import os
 import re
+import constants
 
 # chose an implementation, depending on os
 #~ if sys.platform == 'cli':
@@ -24,6 +25,15 @@ class Port:
 
 def select_port(key, dict):
     return dict[key]
+
+def select_multiple_ports(ports):
+    user_choice = ""
+    while user_choice != "done":
+        user_choice = input(constants.select_text).strip()
+        try:
+            select_port(int(user_choice), ports)
+        except:
+            print(constants.Errors.selection_error)
 
 
 def main():
@@ -66,7 +76,8 @@ def main():
 
     for (key, port) in ports.items():
         print(f"[{key}] {port}")
-    user_choice = input("Select a port number (between brackets)")
+    
+    
     try:
         k = int(user_choice)
         port = select_port(k, ports)

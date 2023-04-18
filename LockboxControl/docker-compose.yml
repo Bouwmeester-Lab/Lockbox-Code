@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  lockboxcontrol.api:
+    image: ${DOCKER_REGISTRY-}lockboxcontrolapi
+    build:
+      context: .
+      dockerfile: LockBoxControl.Api/Dockerfile
+    volumes:
+        - ./LockboxControl.Api/appsettings.json:/app/appsettings.json:ro
+    depends_on:
+        - db
+  db:
+    image: mcr.microsoft.com/mssql/server
+    user: root
+    volumes:
+      - mssql-server-data:/var/opt/mssql/data
+    environment:
+        SA_PASSWORD: "${DB_PW}"
+        ACCEPT_EULA: "Y"
+        MSSQL_PID: "Enterprise"
+    ports:
+      - "1633:1433"
+volumes:
+  mssql-server-data: {}
