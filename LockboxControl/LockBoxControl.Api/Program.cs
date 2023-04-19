@@ -3,6 +3,7 @@ using LockBoxControl.Api.Extensions;
 using LockboxControl.Storage.Extensions;
 using LockboxControl.Storage.Models.Contexts;
 using LockboxControl.Storage.Models;
+using LockboxControl.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //configure ports:
 builder.Services.Configure<PortConfiguration>(builder.Configuration.GetSection(nameof(PortConfiguration)));
+builder.Services.AddScoped<PortManager>();
 
 var opts = builder.Configuration.GetSection(nameof(DatabaseConfigurationOptions)).Get<DatabaseConfigurationOptions>() ?? throw new InvalidOperationException($"Make sure {nameof(DatabaseConfigurationOptions)} is set.");
 

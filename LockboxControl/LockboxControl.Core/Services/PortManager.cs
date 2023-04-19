@@ -1,86 +1,74 @@
-﻿using LockboxControl.Core.Models;
+﻿using LockboxControl.Core.Contracts;
+using LockboxControl.Core.Models;
 using Microsoft.Extensions.Options;
 using System.IO.Ports;
 
 namespace LockboxControl.Core.Services;
 
 
-public class PortManager : IDisposable
+public class PortManager
 {
-    private readonly Dictionary<string, SerialPort> serialPorts = new Dictionary<string, SerialPort>();
+    //private readonly Dictionary<string, SerialPort> serialPorts = new Dictionary<string, SerialPort>();
+
     private readonly PortConfiguration portConfiguration;
+    private readonly IQueryableRepositoryService<Arduino> arduinoService;
 
-
-    public PortManager(IOptions<PortConfiguration>? options = null)
+    public PortManager(IQueryableRepositoryService<Arduino> arduinoService, IOptions<PortConfiguration>? options = null)
     {
         portConfiguration = options?.Value ?? new PortConfiguration();
+        this.arduinoService = arduinoService;
     }
 
-    public void PickPorts(string[] portNames)
+    //public void PickPorts(string[] portNames)
+    //{
+    //    foreach (var portName in portNames)
+    //    {
+    //        if (!serialPorts.ContainsKey(portName))
+    //        {
+    //            serialPorts.Add(portName, new SerialPort(portName, portConfiguration.BaudRate));
+    //        }
+    //    }
+    //}
+
+    public async Task SendCommandAsync(Command command, CancellationToken cancellationToken = default)
     {
-        foreach (var portName in portNames)
+        var arduinos = await arduinoService.GetAllAsync(cancellationToken);
+
+        foreach (var arduino in arduinos)
         {
-            if (!serialPorts.ContainsKey(portName))
+            if (cancellationToken.IsCancellationRequested)
             {
-                serialPorts.Add(portName, new SerialPort(portName, portConfiguration.BaudRate));
+                return;
             }
-        }
-    }
 
-    public void SendCommand(Command command)
-    {
-        foreach (var (_, port) in serialPorts)
-        {
-            SendCommandToSinglePort(command, port);
-        }
-    }
-
-    private void SendCommandToSinglePort(Command command, SerialPort serialPort)
-    {
-        if (serialPort.IsOpen)
-        {
-            // Send the command only if it's open
-            serialPort.Write(command.CommandLetter);
-        }
-    }
-
-    public void Open()
-    {
-        foreach(var (_, port) in serialPorts)
-        {
-            if (!port.IsOpen)
+            if (arduino.IsEnabled)
             {
-                port.Open();
-            }
+                SendCommandToSinglePort(command, arduino);
+            }            
         }
     }
 
-    public void Close()
+    private void SendCommandToSinglePort(Command command, Arduino arduino)
     {
-        foreach(var (_, port) in serialPorts)
+        ArgumentException.ThrowIfNullOrEmpty(arduino.PortName);
+
+        using var serialPort = new SerialPort(arduino.PortName, portConfiguration.BaudRate);
+
+        if (!serialPort.IsOpen)
         {
-            if (port.IsOpen)
-            {
-                port.Close();
-            }
+            serialPort.Open();
         }
+
+        // Send the command only if it's open
+        serialPort.Write(command.CommandLetter);
+
     }
+
+    
 
     public static string[] ListPorts()
     {
         return SerialPort.GetPortNames();
     }
 
-    public void Dispose()
-    {
-        foreach (var (_, port) in serialPorts)
-        {
-            if (port.IsOpen)
-            {
-                port.Close();
-            }
-            port.Dispose();
-        }
-        GC.SuppressFinalize(this);
-    }
 }

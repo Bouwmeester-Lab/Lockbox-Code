@@ -31,6 +31,7 @@ namespace LockboxControl.Storage.Extensions
             }
             services.AddDbContextFactory<DataContext, DataContextFactory>();
 
+            services.AddScoped<IQueryableRepositoryService<Arduino>, CrudService<DataContext, Arduino>>();
             services.AddScoped<IQueryableRepositoryService<Command>, CrudService<DataContext, Command>>();
 
             return services;

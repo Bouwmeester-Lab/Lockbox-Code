@@ -34,7 +34,7 @@ namespace LockboxControl.Storage.Models.Contexts
         {
             var options = new DatabaseConfigurationOptions
             {
-                ConnectionString = "Server=localhost,1533;Database=LockBoxMain;User=sa;Password=Rk+HmfhRN9mt#gm-h*vW8Wbj#",
+                ConnectionString = "Server=localhost,1633;Database=LockboxControlDb;User=sa;TrustServerCertificate=True;Password=Rk+HmfhRN9mt#gm-h*vW8Wbj#",
 
             };
             return new SqlContext(Options.Create(options));
