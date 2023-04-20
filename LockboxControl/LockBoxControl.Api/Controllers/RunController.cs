@@ -20,16 +20,25 @@ namespace LockBoxControl.Api.Controllers
         }
 
         [HttpPost("{commandId}")]
-        public async Task<ActionResult> RunAsync(long commandId, CancellationToken cancellationToken = default)
+        public async Task<ActionResult> RunAsync(long commandId, [FromQuery] long arduinoId = 0, CancellationToken cancellationToken = default)
         {
             var command = await commandService.GetAsync(commandId, cancellationToken);
-            if(command is null)
+            if (command is null)
             {
                 return NotFound("The command doesn't exist.");
             }
 
-            await portManager.SendCommandAsync(command, cancellationToken);
-            return Ok();            
+            if (arduinoId != 0) 
+            {
+                await portManager.SendCommandAsync(arduinoId, command, cancellationToken);
+            }
+            else
+            {
+                await portManager.SendCommandAsync(command, cancellationToken);
+            }
+            return Ok();
         }
+
+        
     }
 }

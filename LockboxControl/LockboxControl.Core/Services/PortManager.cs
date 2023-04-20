@@ -48,6 +48,17 @@ public class PortManager
         }
     }
 
+    public async Task SendCommandAsync(long arduinoId, Command command, CancellationToken cancellationToken = default)
+    {
+        var arduino = await arduinoService.GetAsync(arduinoId, cancellationToken) ?? throw new ArgumentOutOfRangeException(nameof(arduinoId));
+
+        if(cancellationToken.IsCancellationRequested) 
+        {
+            return;
+        }
+        SendCommandToSinglePort(command, arduino);
+    }
+
     private void SendCommandToSinglePort(Command command, Arduino arduino)
     {
         ArgumentException.ThrowIfNullOrEmpty(arduino.PortName);
