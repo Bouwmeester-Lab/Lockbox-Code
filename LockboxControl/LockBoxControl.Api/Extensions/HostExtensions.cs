@@ -21,8 +21,7 @@ namespace LockBoxControl.Api.Extensions
                 try
                 {
                     var db = services.GetRequiredService<T>();
-                    if (db != null)
-                        db.Database.Migrate();
+                    db?.Database.Migrate();
                 }
                 catch (Exception ex)
                 {

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
 namespace LockBoxControl.Api.Controllers.Base
@@ -54,7 +55,7 @@ namespace LockBoxControl.Api.Controllers.Base
         /// <returns></returns>
         //[RequiredScope(ApiScopes.Read)]
         [HttpGet("page")]
-        public async Task<PagedResult<TEntity>> GetPageAsync([FromQuery] int pageNumber, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TEntity>> GetPageAsync([FromQuery][Required] int pageNumber, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
         {
             var results = await _repositoryService.GetPage(pageNumber, pageSize, OrderExpression).ToListAsync(cancellationToken);
             var count = await _repositoryService.QueryAll().CountAsync(cancellationToken);

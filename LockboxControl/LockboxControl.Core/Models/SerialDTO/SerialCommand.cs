@@ -8,6 +8,6 @@ namespace LockboxControl.Core.Models.SerialDTO
 {
     public record SerialCommand(string CommandLetter, Guid RequestId)
     {
-
+        
     }
 }

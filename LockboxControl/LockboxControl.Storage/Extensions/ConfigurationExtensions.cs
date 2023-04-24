@@ -34,8 +34,10 @@ namespace LockboxControl.Storage.Extensions
             services.AddScoped<IQueryableRepositoryService<Arduino>, CrudService<DataContext, Arduino>>();
             services.AddScoped<IQueryableRepositoryService<Command>, CrudService<DataContext, Command>>();
             services.AddScoped<IGenericQueryableRepositoryService<Request, Guid>, QueryableCrudService<DataContext, Request, Guid>>();
+            services.AddScoped<IGenericQueryableRepositoryService<ArduinoStatus, Guid>, QueryableCrudService<DataContext, ArduinoStatus, Guid>>();
 
-            services.AddScoped<IGenericQueryableRepositoryService<Arduino, long>, QueryableCrudService<DataContext, Arduino, long>>();
+            //services.AddScoped<IGenericQueryableRepositoryService<Arduino, long>, QueryableCrudService<DataContext, Arduino, long>>();
+
 
             return services;
         }

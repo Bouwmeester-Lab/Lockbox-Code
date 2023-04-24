@@ -18,5 +18,8 @@ namespace LockboxControl.Core.Models
         [MaxLength(25)]
         public string? PortName { get; set; }
         public bool IsEnabled { get; set; } = false;
+
+        [MaxLength(17)]
+        public string? MacAddress { get; set; }
     }
 }

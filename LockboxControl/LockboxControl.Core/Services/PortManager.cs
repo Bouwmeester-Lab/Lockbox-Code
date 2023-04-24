@@ -102,6 +102,11 @@ public class PortManager
         return status;
     }
 
+    public Task<string> GetMacAddressAsync(Arduino arduino, CancellationToken cancellationToken = default)
+    {
+
+    }
+
 
     public static string[] ListPorts()
     {

@@ -1,6 +1,8 @@
 ﻿using LockboxControl.Core.Contracts;
+using LockboxControl.Core.Models.SerialDTO;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,5 +24,15 @@ namespace LockboxControl.Core.Models
         public required string Description { get; set; }
        
         public required string CommandLetter { get; set; }
+
+
+        [NotMapped]
+        static Command MacAddressCommand => new Command
+        {
+            CommandLetter = "m",
+            Description = "Gets the mac address of the arduino.",
+            Name = "Mac Address",
+            Id = 0,
+        };
     }
 }
