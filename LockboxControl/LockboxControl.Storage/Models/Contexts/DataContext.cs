@@ -25,6 +25,6 @@ namespace LockboxControl.Storage.Models.Contexts
 
         public DbSet<Command> Commands => Set<Command>();
         public DbSet<Arduino> Arduinos => Set<Arduino>();
-        
+        public DbSet<Request> Requests => Set<Request>();
     }
 }

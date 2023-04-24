@@ -5,18 +5,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 
 namespace LockBoxControl.Api.Controllers.Base
 {
     [Route("api/[controller]")]
     [ApiController]
-    public abstract class CrudBaseController<TEntity> : ControllerBase, ICrudController<TEntity> where TEntity : class, IEntity
+    public abstract class CrudBaseController<TEntity, TId, TOrder> : ControllerBase, ICrudController<TEntity, TId> 
+        where TEntity : class, IEntity<TId>
+        where TId : IEquatable<TId>
     {
-        protected IQueryableRepositoryService<TEntity> _repositoryService;
-        private readonly ILogger<CrudBaseController<TEntity>> _logger;
+        protected readonly IGenericQueryableRepositoryService<TEntity, TId> _repositoryService;
+        private readonly ILogger<CrudBaseController<TEntity, TId, TOrder>> _logger;
 
-        public CrudBaseController(IQueryableRepositoryService<TEntity> repositoryService, ILogger<CrudBaseController<TEntity>> logger)
+        protected abstract Expression<Func<TEntity, TOrder>> OrderExpression { get; } 
+
+        public CrudBaseController(IGenericQueryableRepositoryService<TEntity, TId> repositoryService, ILogger<CrudBaseController<TEntity, TId, TOrder>> logger)
         {
             _repositoryService = repositoryService;
             _logger = logger;
@@ -50,13 +54,9 @@ namespace LockBoxControl.Api.Controllers.Base
         /// <returns></returns>
         //[RequiredScope(ApiScopes.Read)]
         [HttpGet("page")]
-        public async Task<PagedResult<TEntity>> GetPageAsync([FromQuery][Required] int pageNumber, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<TEntity>> GetPageAsync([FromQuery] int pageNumber, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            if(pageNumber < 0 || pageSize < 0)
-            {
-                throw new ArgumentOutOfRangeException($"{nameof(pageNumber)} and {nameof(pageSize)} must be greater than 0.");
-            }
-            var results = await _repositoryService.GetPage(pageNumber, pageSize).ToListAsync(cancellationToken);
+            var results = await _repositoryService.GetPage(pageNumber, pageSize, OrderExpression).ToListAsync(cancellationToken);
             var count = await _repositoryService.QueryAll().CountAsync(cancellationToken);
 
             return new PagedResult<TEntity>
@@ -75,7 +75,7 @@ namespace LockBoxControl.Api.Controllers.Base
         /// <returns></returns>
         [HttpGet("{id}")]
         //[RequiredScope(ApiScopes.Read)]
-        public virtual Task<TEntity?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
+        public virtual Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken = default)
         {
             return _repositoryService.GetAsync(id, cancellationToken);
         }
@@ -115,7 +115,7 @@ namespace LockBoxControl.Api.Controllers.Base
         //[Authorize(Policy = PredifinedRoles.AdminsPolicyName)]
         [HttpDelete("{id}")]
         //[RequiredScope(ApiScopes.Delete)]
-        public virtual async Task<IActionResult> DeleteAsync(long id, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> DeleteAsync(TId id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -139,13 +139,13 @@ namespace LockBoxControl.Api.Controllers.Base
         //[Authorize(Policy = PredifinedRoles.AdminsPolicyName)]
         [HttpPut("{id}")]
         //[RequiredScope(ApiScopes.Update)]
-        public virtual async Task<IActionResult> UpdateAsync(long id, [FromBody] TEntity entity, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> UpdateAsync(TId id, [FromBody] TEntity entity, CancellationToken cancellationToken = default)
         {
             if (entity == null)
                 return BadRequest(new ArgumentNullException(nameof(entity)));
-            if (id == 0)
+            if (id.Equals(default))
                 return BadRequest(new ArgumentException("id cannot be 0"));
-            if (entity.Id != id)
+            if (!entity.Id.Equals(id))
                 return BadRequest(new ArgumentException("id and entitie's id must be the same."));
             await _repositoryService.UpdateAsync(entity).ConfigureAwait(false);
             return Ok();

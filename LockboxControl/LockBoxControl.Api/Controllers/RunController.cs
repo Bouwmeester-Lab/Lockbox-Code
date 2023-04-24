@@ -1,5 +1,6 @@
 ﻿using LockboxControl.Core.Contracts;
 using LockboxControl.Core.Models;
+using LockboxControl.Core.Models.ApiDTO;
 using LockboxControl.Core.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +21,10 @@ namespace LockBoxControl.Api.Controllers
         }
 
         [HttpPost("{commandId}")]
-        public async Task<ActionResult> RunAsync(long commandId, [FromQuery] long arduinoId = 0, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<List<ArduinoCommandStatus>>> RunAsync(long commandId, [FromQuery] long arduinoId = 0, CancellationToken cancellationToken = default)
         {
             var command = await commandService.GetAsync(commandId, cancellationToken);
+            var statuses = new List<ArduinoCommandStatus>();
             if (command is null)
             {
                 return NotFound("The command doesn't exist.");
@@ -30,15 +32,13 @@ namespace LockBoxControl.Api.Controllers
 
             if (arduinoId != 0) 
             {
-                await portManager.SendCommandAsync(arduinoId, command, cancellationToken);
+                statuses.Add(await portManager.SendCommandAsync(arduinoId, command, cancellationToken));
             }
             else
             {
-                await portManager.SendCommandAsync(command, cancellationToken);
+                statuses = await portManager.SendCommandAsync(command, cancellationToken);
             }
-            return Ok();
+            return Ok(statuses);
         }
-
-        
     }
 }

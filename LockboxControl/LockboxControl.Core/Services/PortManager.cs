@@ -1,7 +1,10 @@
 ﻿using LockboxControl.Core.Contracts;
 using LockboxControl.Core.Models;
+using LockboxControl.Core.Models.ApiDTO;
+using LockboxControl.Core.Models.SerialDTO;
 using Microsoft.Extensions.Options;
 using System.IO.Ports;
+using System.Text.Json;
 
 namespace LockboxControl.Core.Services;
 
@@ -12,11 +15,13 @@ public class PortManager
 
     private readonly PortConfiguration portConfiguration;
     private readonly IQueryableRepositoryService<Arduino> arduinoService;
+    private readonly RequestManager requestManager;
 
-    public PortManager(IQueryableRepositoryService<Arduino> arduinoService, IOptions<PortConfiguration>? options = null)
+    public PortManager(IQueryableRepositoryService<Arduino> arduinoService, RequestManager requestManager,  IOptions<PortConfiguration>? options = null)
     {
         portConfiguration = options?.Value ?? new PortConfiguration();
         this.arduinoService = arduinoService;
+        this.requestManager = requestManager;
     }
 
     //public void PickPorts(string[] portNames)
@@ -30,38 +35,45 @@ public class PortManager
     //    }
     //}
 
-    public async Task SendCommandAsync(Command command, CancellationToken cancellationToken = default)
+    public async Task<List<ArduinoCommandStatus>> SendCommandAsync(Command command, CancellationToken cancellationToken = default)
     {
         var arduinos = await arduinoService.GetAllAsync(cancellationToken);
-
+        var statuses = new List<ArduinoCommandStatus>();
         foreach (var arduino in arduinos)
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return;
+                throw new TaskCanceledException();
             }
 
             if (arduino.IsEnabled)
             {
-                SendCommandToSinglePort(command, arduino);
+                var status = await SendCommandToSinglePortAsync(command, arduino, cancellationToken).ConfigureAwait(false);
+
+                statuses.Add(ArduinoCommandStatus.FromSerialCommandStatus(status, arduino.Id));
             }            
         }
+        return statuses;
     }
 
-    public async Task SendCommandAsync(long arduinoId, Command command, CancellationToken cancellationToken = default)
+    public async Task<ArduinoCommandStatus> SendCommandAsync(long arduinoId, Command command, CancellationToken cancellationToken = default)
     {
         var arduino = await arduinoService.GetAsync(arduinoId, cancellationToken) ?? throw new ArgumentOutOfRangeException(nameof(arduinoId));
 
         if(cancellationToken.IsCancellationRequested) 
         {
-            return;
+            throw new TaskCanceledException();
         }
-        SendCommandToSinglePort(command, arduino);
+        var status = await SendCommandToSinglePortAsync(command, arduino, cancellationToken).ConfigureAwait(false);
+        return ArduinoCommandStatus.FromSerialCommandStatus(status, arduino.Id);
     }
 
-    private void SendCommandToSinglePort(Command command, Arduino arduino)
+    private async Task<SerialCommandStatus?> SendCommandToSinglePortAsync(Command command, Arduino arduino, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(arduino.PortName);
+
+        // create request
+        var request = await requestManager.CreateRequestAsync(arduino, command, cancellationToken).ConfigureAwait(false);
 
         using var serialPort = new SerialPort(arduino.PortName, portConfiguration.BaudRate);
 
@@ -71,11 +83,25 @@ public class PortManager
         }
 
         // Send the command only if it's open
-        serialPort.Write(command.CommandLetter);
+        var commandJson = JsonSerializer.Serialize(new SerialCommand(command.CommandLetter, request.Id), options: new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+        serialPort.WriteLine(commandJson);
 
+        // Read the response (status)
+
+        var json = serialPort.ReadLine();
+        var status = JsonSerializer.Deserialize<SerialCommandStatus>(json);
+
+        if(status != null && !status.IsLongRunning)
+        {
+            await requestManager.ProcessRequestAsync(status, cancellationToken).ConfigureAwait(false); // saves the request as completed. It logs the result.
+        }
+
+        return status;
     }
 
-    
 
     public static string[] ListPorts()
     {

@@ -1,5 +1,6 @@
 ﻿using LockboxControl.Core.Contracts;
 using LockboxControl.Storage.Extensions;
+using LockboxControl.Storage.Services.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -12,20 +13,12 @@ using System.Threading.Tasks;
 
 namespace LockboxControl.Storage.Services
 {
-    public class CrudService<TContext, TEntity> : BaseCrudService<TContext, TEntity>, IQueryableRepositoryService<TEntity>
+    public class CrudService<TContext, TEntity> : QueryableCrudService<TContext, TEntity, long>, IQueryableRepositoryService<TEntity>
         where TContext : DbContext
         where TEntity : class, IEntity
     {
-        protected readonly TContext _context;
-        public CrudService(TContext context, IDbContextFactory<TContext> dbContextFactory) : base(dbContextFactory)
+        public CrudService(IDbContextFactory<TContext> dbContextFactory, TContext context) : base(dbContextFactory, context)
         {
-            _context = context;
-        }
-
-        public IQueryable<TEntity> QueryAll(IServiceScope serviceScope)
-        {
-            var context = serviceScope.ServiceProvider.GetRequiredService<TContext>();
-            return context.Set<TEntity>();
         }
 
         public IQueryable<TEntity> GetPage(int page, int pageSize, Expression<Func<TEntity, bool>>? filterPredicate = null)
@@ -37,24 +30,27 @@ namespace LockboxControl.Storage.Services
             return _context.Set<TEntity>().OrderByDescending(e => e.Id).Skip((page - 1) * pageSize).Take(pageSize);
         }
 
-        public IQueryable<TEntity> QueryAll()
+        public override Task DeleteAsync(long id, CancellationToken cancellationToken = default)
         {
-            return _context.Set<TEntity>();
+            if (id == 0)
+            {
+                return Task.CompletedTask; // We skip an entity with id == 0
+            }
+            return base.DeleteAsync(id, cancellationToken);
         }
 
-        public Task SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            return _context.SaveChangesAsync(cancellationToken);
+            if(entity.Id == 0)
+            {
+                return Task.CompletedTask; // We skip an entity with id == 0
+            }
+            return base.UpdateAsync(entity, cancellationToken);
         }
 
         public IQueryable<TEntity> Take(int count)
         {
-            return _context.Set<TEntity>().OrderBy(x => x.Id).Take(count);
-        }
-
-        public virtual void Dispose()
-        {
-            _context.Dispose();
+            return base.Take(count, x => x.Id);
         }
     }
 }
