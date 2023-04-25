@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Core.Contracts;
+namespace LockBoxControl.Core.Contracts;
 
 /// <summary>
 /// An entity with an ID of type <typeparamref name="T"/>

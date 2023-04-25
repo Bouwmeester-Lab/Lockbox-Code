@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Storage.Models.Contexts;
+namespace LockBoxControl.Storage.Models.Contexts;
 
 ///<inheritdoc/>
 public class MySqlContext : DataContext

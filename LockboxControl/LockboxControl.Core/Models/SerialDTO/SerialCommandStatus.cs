@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Core.Models.SerialDTO
+namespace LockBoxControl.Core.Models.SerialDTO
 {
     public class SerialCommandStatus
     {
@@ -17,5 +17,7 @@ namespace LockboxControl.Core.Models.SerialDTO
         public string? ErrorMessage { get; set; }
         [JsonPropertyName("requestId")]
         public Guid RequestId { get; set; }
+        [JsonPropertyName("result")]
+        public object? Result { get; set; }
     }
 }

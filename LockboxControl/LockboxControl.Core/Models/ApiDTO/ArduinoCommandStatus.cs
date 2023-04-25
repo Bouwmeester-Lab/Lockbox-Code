@@ -1,11 +1,11 @@
-﻿using LockboxControl.Core.Models.SerialDTO;
+﻿using LockBoxControl.Core.Models.SerialDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Core.Models.ApiDTO
+namespace LockBoxControl.Core.Models.ApiDTO
 {
     public class ArduinoCommandStatus
     {

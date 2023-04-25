@@ -20,7 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LockboxControl.Core\LockboxControl.Core.csproj" />
+    <ProjectReference Include="..\..\LockBoxControl.Core.Backend\LockBoxControl.Core.Backend.csproj" />
+    <ProjectReference Include="..\LockboxControl.Core\LockBoxControl.Core.csproj" />
     <ProjectReference Include="..\LockboxControl.Storage\LockboxControl.Storage.csproj" />
   </ItemGroup>
 

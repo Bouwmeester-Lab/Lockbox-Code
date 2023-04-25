@@ -1,6 +1,6 @@
-﻿using LockboxControl.Core.Contracts;
-using LockboxControl.Storage.Models.Contexts;
-using LockboxControl.Storage.Services.Base;
+﻿using LockBoxControl.Core.Contracts;
+using LockBoxControl.Storage.Models.Contexts;
+using LockBoxControl.Storage.Services.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Storage.Services
+namespace LockBoxControl.Storage.Services
 {
     public class QueryableCrudService<TContext, TEntity, TId> : GenericCrudService<TContext, TEntity, TId>, IGenericQueryableRepositoryService<TEntity, TId>
         where TContext : DbContext

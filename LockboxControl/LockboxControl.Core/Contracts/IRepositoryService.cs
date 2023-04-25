@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Core.Contracts
+namespace LockBoxControl.Core.Contracts
 {
     /// <summary>
     /// A generic repository service.

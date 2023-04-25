@@ -1,10 +1,10 @@
-using LockboxControl.Core.Models;
 using LockBoxControl.Api.Extensions;
-using LockboxControl.Storage.Extensions;
-using LockboxControl.Storage.Models.Contexts;
-using LockboxControl.Storage.Models;
-using LockboxControl.Core.Services;
+using LockBoxControl.Storage.Extensions;
+using LockBoxControl.Storage.Models.Contexts;
+using LockBoxControl.Storage.Models;
 using System.Text.Json.Serialization;
+using LockBoxControl.Core.Models;
+using LockBoxControl.Core.Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +61,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // run migrations
-app.MigrateDatabase<DataContext>();
+app.MigrateDatabaseAsync<DataContext>();
 
 app.Run();

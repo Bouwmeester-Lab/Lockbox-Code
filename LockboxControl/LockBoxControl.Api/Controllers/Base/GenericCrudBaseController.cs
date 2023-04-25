@@ -1,6 +1,6 @@
-﻿using LockboxControl.Core.Contracts;
-using LockboxControl.Core.Models;
+﻿using LockBoxControl.Core.Contracts;
 using LockBoxControl.Api.Contracts;
+using LockBoxControl.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

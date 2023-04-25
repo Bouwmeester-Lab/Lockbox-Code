@@ -1,5 +1,5 @@
-﻿using LockboxControl.Core.Contracts;
-using LockboxControl.Core.Models;
+﻿using LockBoxControl.Core.Contracts;
+using LockBoxControl.Core.Models;
 using LockBoxControl.Api.Controllers.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

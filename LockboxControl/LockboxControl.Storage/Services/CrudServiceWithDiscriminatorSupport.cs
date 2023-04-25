@@ -1,5 +1,5 @@
-﻿using LockboxControl.Core.Contracts;
-using LockboxControl.Storage.Extensions;
+﻿using LockBoxControl.Core.Contracts;
+using LockBoxControl.Storage.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Storage.Services
+namespace LockBoxControl.Storage.Services
 {
     //public class CrudServiceWithDiscriminator<TContext, TEntity> : IQueryableRepositoryService<TEntity>
     //    where TContext : DbContext

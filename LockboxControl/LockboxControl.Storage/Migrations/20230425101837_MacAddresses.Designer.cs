@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LockBoxControl.Storage.Migrations
 {
     [DbContext(typeof(SqlContext))]
-    [Migration("20230424111444_Requests")]
-    partial class Requests
+    [Migration("20230425101837_MacAddresses")]
+    partial class MacAddresses
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace LockBoxControl.Storage.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LockboxControl.Core.Models.Arduino", b =>
+            modelBuilder.Entity("LockBoxControl.Core.Models.Arduino", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,6 +41,10 @@ namespace LockBoxControl.Storage.Migrations
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<string>("MacAddress")
+                        .HasMaxLength(17)
+                        .HasColumnType("nvarchar(17)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -55,7 +59,25 @@ namespace LockBoxControl.Storage.Migrations
                     b.ToTable("Arduinos");
                 });
 
-            modelBuilder.Entity("LockboxControl.Core.Models.Command", b =>
+            modelBuilder.Entity("LockBoxControl.Core.Models.ArduinoStatus", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(24)");
+
+                    b.Property<DateTime>("StatusDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ArduinoStatuses");
+                });
+
+            modelBuilder.Entity("LockBoxControl.Core.Models.Command", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -80,7 +102,7 @@ namespace LockBoxControl.Storage.Migrations
                     b.ToTable("Commands");
                 });
 
-            modelBuilder.Entity("LockboxControl.Core.Models.Request", b =>
+            modelBuilder.Entity("LockBoxControl.Core.Models.Request", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,15 +135,15 @@ namespace LockBoxControl.Storage.Migrations
                     b.ToTable("Requests");
                 });
 
-            modelBuilder.Entity("LockboxControl.Core.Models.Request", b =>
+            modelBuilder.Entity("LockBoxControl.Core.Models.Request", b =>
                 {
-                    b.HasOne("LockboxControl.Core.Models.Arduino", "Arduino")
+                    b.HasOne("LockBoxControl.Core.Models.Arduino", "Arduino")
                         .WithMany()
                         .HasForeignKey("ArduinoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LockboxControl.Core.Models.Command", "Command")
+                    b.HasOne("LockBoxControl.Core.Models.Command", "Command")
                         .WithMany()
                         .HasForeignKey("CommandId")
                         .OnDelete(DeleteBehavior.Cascade)

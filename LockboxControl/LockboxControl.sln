@@ -5,13 +5,15 @@ VisualStudioVersion = 17.5.33312.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockboxControlCLI", "LockboxControlCLI\LockboxControlCLI.csproj", "{B93395E3-10B6-40E1-9C20-6E2EE376C5D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockboxControl.Core", "LockboxControl.Core\LockboxControl.Core.csproj", "{EAB9426E-E8AA-4AA3-B606-0D29C87585D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LockBoxControl.Core", "LockboxControl.Core\LockBoxControl.Core.csproj", "{EAB9426E-E8AA-4AA3-B606-0D29C87585D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockBoxControl.Api", "LockBoxControl.Api\LockBoxControl.Api.csproj", "{BF915746-35E7-4468-9C70-05013AD9AC65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LockBoxControl.Api", "LockBoxControl.Api\LockBoxControl.Api.csproj", "{BF915746-35E7-4468-9C70-05013AD9AC65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockboxControl.Storage", "LockboxControl.Storage\LockboxControl.Storage.csproj", "{49D6010F-5748-4593-B543-430E4A7C45E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LockboxControl.Storage", "LockboxControl.Storage\LockboxControl.Storage.csproj", "{49D6010F-5748-4593-B543-430E4A7C45E2}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{B92DAF74-6AF6-4E49-B678-6825A0D27497}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockBoxControl.Core.Backend", "..\LockBoxControl.Core.Backend\LockBoxControl.Core.Backend.csproj", "{C02450DB-8558-45AC-8670-B53818FC9E15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{B92DAF74-6AF6-4E49-B678-6825A0D27497}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B92DAF74-6AF6-4E49-B678-6825A0D27497}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B92DAF74-6AF6-4E49-B678-6825A0D27497}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C02450DB-8558-45AC-8670-B53818FC9E15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C02450DB-8558-45AC-8670-B53818FC9E15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C02450DB-8558-45AC-8670-B53818FC9E15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C02450DB-8558-45AC-8670-B53818FC9E15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-﻿using LockboxControl.Storage.Models.Contexts;
+﻿using LockBoxControl.Storage.Models.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Storage.Models
+namespace LockBoxControl.Storage.Models
 {
     public class DataContextFactory : ContextFactory<DataContext, DatabaseConfigurationOptions>, IDbContextFactory<DataContext>
     {

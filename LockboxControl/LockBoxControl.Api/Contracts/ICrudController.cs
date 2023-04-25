@@ -1,4 +1,4 @@
-﻿using LockboxControl.Core.Contracts;
+﻿using LockBoxControl.Core.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LockBoxControl.Api.Contracts

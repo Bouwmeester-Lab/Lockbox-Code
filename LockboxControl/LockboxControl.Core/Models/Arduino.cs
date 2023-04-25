@@ -1,4 +1,4 @@
-﻿using LockboxControl.Core.Contracts;
+﻿using LockBoxControl.Core.Contracts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Core.Models
+namespace LockBoxControl.Core.Models
 {
     public class Arduino : IEntity
     {

@@ -1,11 +1,6 @@
-﻿using LockboxControl.Core.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LockBoxControl.Core.Contracts;
 
-namespace LockboxControl.Core.Models
+namespace LockBoxControl.Core.Models
 {
     public class Request : IEntity<Guid>
     {

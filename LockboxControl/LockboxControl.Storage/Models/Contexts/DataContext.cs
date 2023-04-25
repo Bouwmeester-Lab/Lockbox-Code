@@ -1,4 +1,5 @@
-﻿using LockboxControl.Core.Models;
+﻿using LockBoxControl.Core.Models;
+using LockBoxControl.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Storage.Models.Contexts
+namespace LockBoxControl.Storage.Models.Contexts
 {
     public class DataContext : BaseDbContext
     {

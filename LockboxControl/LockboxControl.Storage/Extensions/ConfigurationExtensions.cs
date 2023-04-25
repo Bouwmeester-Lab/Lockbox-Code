@@ -1,8 +1,9 @@
-﻿using LockboxControl.Core.Contracts;
-using LockboxControl.Core.Models;
-using LockboxControl.Storage.Models;
-using LockboxControl.Storage.Models.Contexts;
-using LockboxControl.Storage.Services;
+﻿using LockBoxControl.Core.Contracts;
+using LockBoxControl.Core.Models;
+using LockBoxControl.Storage.Models;
+using LockBoxControl.Storage.Models.Contexts;
+using LockBoxControl.Storage.Services;
+using LockBoxControl.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Storage.Extensions
+namespace LockBoxControl.Storage.Extensions
 {
     public static class ConfigurationExtensions
     {

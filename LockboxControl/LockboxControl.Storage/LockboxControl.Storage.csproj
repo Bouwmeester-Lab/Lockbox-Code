@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LockboxControl.Core\LockboxControl.Core.csproj" />
+    <ProjectReference Include="..\LockboxControl.Core\LockBoxControl.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

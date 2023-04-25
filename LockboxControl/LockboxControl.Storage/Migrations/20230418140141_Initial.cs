@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace LockboxControl.Storage.Migrations
+namespace LockBoxControl.Storage.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Storage.Models
+namespace LockBoxControl.Storage.Models
 {
     public abstract class ContextFactory<TContext, TOptions> : IDbContextFactory<TContext>
         where TContext : DbContext

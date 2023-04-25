@@ -1,4 +1,4 @@
-﻿using LockboxControl.Core.Contracts;
+﻿using LockBoxControl.Core.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LockboxControl.Storage.Services.Base
+namespace LockBoxControl.Storage.Services.Base
 {
     /// <summary>
     /// Base crud service which takes an IDbContextFactory<TContext> and provides basic operations on the the context. It supports async operations.
