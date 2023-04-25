@@ -1,4 +1,5 @@
 ﻿using LockBoxControl.Core.Backend.Services;
+using LockBoxControl.Core.Models;
 using LockBoxControl.Core.Models.ApiDTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,9 @@ namespace LockBoxControl.Api.Controllers
         }
 
         [HttpPost]
-        public async Task UpdateStatusAsync([FromBody] ArduinoStatusDTO arduinoStatus, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<ArduinoStatus?>> UpdateStatusAsync([FromBody] ArduinoStatusDTO arduinoStatus, CancellationToken cancellationToken = default)
         {
-            //await pingManager.UpdateStatusAsync()
+            return Ok(await pingManager.UpdateStatusAsync(arduinoStatus, cancellationToken));
         }
     }
 }

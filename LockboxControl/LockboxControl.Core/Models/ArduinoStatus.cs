@@ -13,6 +13,9 @@ public class ArduinoStatus : IEntity<Guid>
     public Status Status { get; set; }
 
     public DateTime StatusDateTime { get; set; }
+
+    public long ArduinoId { get; set; }
+    public Arduino? Arduino { get; set; }
 }
 
 public enum Status

@@ -1,6 +1,7 @@
 ﻿using LockBoxControl.Core.Contracts;
 using LockBoxControl.Core.Models;
 using LockBoxControl.Core.Models.ApiDTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace LockBoxControl.Core.Backend.Services;
 
@@ -46,8 +47,20 @@ public class PingManager
         }
     }
 
-    public async Task UpdateStatusAsync(ArduinoStatusDTO arduinoStatus, CancellationToken cancellationToken = default)
+    public async Task<ArduinoStatus?> UpdateStatusAsync(ArduinoStatusDTO arduinoStatus, CancellationToken cancellationToken = default)
     {
-
+        var arduino = await arduinoService.QueryAll().Where(x => x.MacAddress != null && x.MacAddress.Equals(arduinoStatus.macAddress.ToLower())).FirstOrDefaultAsync(cancellationToken);
+        
+        if(arduino != null)
+        {
+            return await arduinoStatusesRepositoryService.CreateAsync(new ArduinoStatus
+            {
+                Id = Guid.NewGuid(),
+                Status = arduinoStatus.Status,
+                StatusDateTime = DateTime.UtcNow,
+                ArduinoId = arduino.Id,
+            }, cancellationToken);
+        }
+        return null;
     }
 }
