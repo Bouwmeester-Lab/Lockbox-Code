@@ -1,5 +1,6 @@
 ﻿using LockBoxControl.Core.Contracts;
 using LockBoxControl.Core.Models;
+using LockBoxControl.Core.Models.ApiDTO;
 
 namespace LockBoxControl.Core.Backend.Services;
 
@@ -11,6 +12,7 @@ public class PingManager
     private readonly IGenericQueryableRepositoryService<ArduinoStatus, Guid> arduinoStatusesRepositoryService;
     private readonly PortManager portManager;
     private readonly IQueryableRepositoryService<Arduino> arduinoService;
+    
     public PingManager(IGenericQueryableRepositoryService<ArduinoStatus, Guid> arduinoStatusesRepositoryService, PortManager portManager, IQueryableRepositoryService<Arduino> arduinoService)
     {
         this.arduinoStatusesRepositoryService = arduinoStatusesRepositoryService;
@@ -42,5 +44,10 @@ public class PingManager
                 break; // we have found our match move on.
             }
         }
+    }
+
+    public async Task UpdateStatusAsync(ArduinoStatusDTO arduinoStatus, CancellationToken cancellationToken = default)
+    {
+
     }
 }

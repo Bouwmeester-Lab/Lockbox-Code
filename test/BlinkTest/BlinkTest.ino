@@ -39,13 +39,27 @@ public:
     doc["isLongRunning"] = isLongRunning;
     if(isOk){
       doc["errorMessage"] = serialized("null");
+      AddResult(doc);
     }
     else{
       doc["errorMessage"] = errorMessage;
     }
-     
     serializeJson(doc, Serial);
     Serial.println();
+  }
+
+  virtual void AddResult(DynamicJsonDocument& doc)
+  {      
+
+  }
+};
+
+class MacResult : public SerialCommandStatus
+{
+public:
+  void AddResult(DynamicJsonDocument& doc)
+  {
+    doc["result"] = "AB-6F-C8-43-CD-B1";
   }
 };
 
@@ -106,6 +120,9 @@ void loop() {
         case 'l':
           TurnOffLed(command.requestId);
           break;
+        case 'm':
+          getMacAddress(command.requestId);
+          break;
         default:
           SendError("unkown command");
           break;
@@ -137,6 +154,13 @@ void TurnOffLed(String requestId){
 void TurnOnLed(String requestId){
   digitalWrite(LED_BUILTIN, HIGH);
   SerialCommandStatus status;
+  status.isOk = true;
+  status.requestId = requestId;
+  status.sendThroughSerial();
+}
+
+void getMacAddress(String requestId){
+  MacResult status;
   status.isOk = true;
   status.requestId = requestId;
   status.sendThroughSerial();

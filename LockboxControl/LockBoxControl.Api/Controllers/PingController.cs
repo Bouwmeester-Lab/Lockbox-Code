@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LockBoxControl.Core.Backend.Services;
+using LockBoxControl.Core.Models.ApiDTO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace LockBoxControl.Api.Controllers
 {
@@ -10,5 +13,21 @@ namespace LockBoxControl.Api.Controllers
     [ApiController]
     public class PingController : ControllerBase
     {
+        private readonly PingManager pingManager;
+        public PingController(PingManager pingManager)
+        {
+            this.pingManager = pingManager;
+        }
+        [HttpPost("{macAddress}")]
+        public async Task RegisterMacAddressAsync([Required] string macAddress, CancellationToken cancellationToken = default)
+        {
+            await pingManager.RegisterArduinoAsync(macAddress, cancellationToken);
+        }
+
+        [HttpPost]
+        public async Task UpdateStatusAsync([FromBody] ArduinoStatusDTO arduinoStatus, CancellationToken cancellationToken = default)
+        {
+            //await pingManager.UpdateStatusAsync()
+        }
     }
 }

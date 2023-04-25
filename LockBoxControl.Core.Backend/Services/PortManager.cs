@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System.IO.Ports;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LockBoxControl.Core.Backend.Services;
 
@@ -18,13 +19,15 @@ public class PortManager
     private readonly IQueryableRepositoryService<Arduino> arduinoService;
     private readonly RequestManager requestManager;
     private readonly IQueryableRepositoryService<Command> commandService;
+    private readonly IServiceProvider serviceProvider;
 
-    public PortManager(IQueryableRepositoryService<Arduino> arduinoService, IQueryableRepositoryService<Command> commandService, RequestManager requestManager, IOptions<PortConfiguration>? options = null)
+    public PortManager(IQueryableRepositoryService<Arduino> arduinoService, IQueryableRepositoryService<Command> commandService, RequestManager requestManager, IServiceProvider serviceProvider, IOptions<PortConfiguration>? options = null)
     {
         portConfiguration = options?.Value ?? new PortConfiguration();
         this.arduinoService = arduinoService;
         this.requestManager = requestManager;
         this.commandService = commandService;
+        this.serviceProvider = serviceProvider;
     }
 
     //public void PickPorts(string[] portNames)
@@ -107,7 +110,10 @@ public class PortManager
 
     public async Task<string?> GetMacAddressAsync(Arduino arduino, CancellationToken cancellationToken = default)
     {
-        var macCommand = await commandService.QueryAll().Where(x => x.CommandLetter == Command.MacAddressCommand.CommandLetter).FirstOrDefaultAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        // this must be able to be called from multiple threads
+        using var serviceScope = serviceProvider.CreateScope();
+
+        var macCommand = await commandService.QueryAll(serviceScope).Where(x => x.CommandLetter == Command.MacAddressCommand.CommandLetter).FirstOrDefaultAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
         if (macCommand != null)
         {

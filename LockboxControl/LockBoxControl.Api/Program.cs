@@ -16,6 +16,7 @@ builder.Services.Configure<PortConfiguration>(builder.Configuration.GetSection(n
 
 builder.Services.AddScoped<RequestManager>();
 builder.Services.AddScoped<PortManager>();
+builder.Services.AddScoped<PingManager>();
 
 var opts = builder.Configuration.GetSection(nameof(DatabaseConfigurationOptions)).Get<DatabaseConfigurationOptions>() ?? throw new InvalidOperationException($"Make sure {nameof(DatabaseConfigurationOptions)} is set.");
 
