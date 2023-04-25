@@ -1,12 +1,13 @@
-﻿using LockboxControl.Core.Contracts;
-using LockboxControl.Core.Models;
-using LockboxControl.Core.Models.ApiDTO;
-using LockboxControl.Core.Models.SerialDTO;
+﻿using LockBoxControl.Core.Contracts;
+using LockBoxControl.Core.Models.ApiDTO;
+using LockBoxControl.Core.Models.SerialDTO;
+using LockBoxControl.Core.Models;
 using Microsoft.Extensions.Options;
 using System.IO.Ports;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
-namespace LockboxControl.Core.Services;
+namespace LockBoxControl.Core.Backend.Services;
 
 
 public class PortManager
@@ -16,12 +17,14 @@ public class PortManager
     private readonly PortConfiguration portConfiguration;
     private readonly IQueryableRepositoryService<Arduino> arduinoService;
     private readonly RequestManager requestManager;
+    private readonly IQueryableRepositoryService<Command> commandService;
 
-    public PortManager(IQueryableRepositoryService<Arduino> arduinoService, RequestManager requestManager,  IOptions<PortConfiguration>? options = null)
+    public PortManager(IQueryableRepositoryService<Arduino> arduinoService, IQueryableRepositoryService<Command> commandService, RequestManager requestManager, IOptions<PortConfiguration>? options = null)
     {
         portConfiguration = options?.Value ?? new PortConfiguration();
         this.arduinoService = arduinoService;
         this.requestManager = requestManager;
+        this.commandService = commandService;
     }
 
     //public void PickPorts(string[] portNames)
@@ -51,7 +54,7 @@ public class PortManager
                 var status = await SendCommandToSinglePortAsync(command, arduino, cancellationToken).ConfigureAwait(false);
 
                 statuses.Add(ArduinoCommandStatus.FromSerialCommandStatus(status, arduino.Id));
-            }            
+            }
         }
         return statuses;
     }
@@ -60,7 +63,7 @@ public class PortManager
     {
         var arduino = await arduinoService.GetAsync(arduinoId, cancellationToken) ?? throw new ArgumentOutOfRangeException(nameof(arduinoId));
 
-        if(cancellationToken.IsCancellationRequested) 
+        if (cancellationToken.IsCancellationRequested)
         {
             throw new TaskCanceledException();
         }
@@ -94,7 +97,7 @@ public class PortManager
         var json = serialPort.ReadLine();
         var status = JsonSerializer.Deserialize<SerialCommandStatus>(json);
 
-        if(status != null && !status.IsLongRunning)
+        if (status != null && !status.IsLongRunning)
         {
             await requestManager.ProcessRequestAsync(status, cancellationToken).ConfigureAwait(false); // saves the request as completed. It logs the result.
         }
@@ -102,9 +105,22 @@ public class PortManager
         return status;
     }
 
-    public Task<string> GetMacAddressAsync(Arduino arduino, CancellationToken cancellationToken = default)
+    public async Task<string?> GetMacAddressAsync(Arduino arduino, CancellationToken cancellationToken = default)
     {
+        var macCommand = await commandService.QueryAll().Where(x => x.CommandLetter == Command.MacAddressCommand.CommandLetter).FirstOrDefaultAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
+        if (macCommand != null)
+        {
+            var status = await SendCommandToSinglePortAsync(macCommand, arduino, cancellationToken).ConfigureAwait(false);
+
+           if(status != null && !status.IsLongRunning)
+           {
+                // the result is the mac address
+                var macAddress = status.Result?.ToString() ?? throw new InvalidOperationException("The result cannot be empty when obtaining the mac address.");
+                return macAddress;
+           }
+        }
+        return default;
     }
 
 

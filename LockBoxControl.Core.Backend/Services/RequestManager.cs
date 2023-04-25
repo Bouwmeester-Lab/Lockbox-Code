@@ -1,13 +1,14 @@
-﻿using LockboxControl.Core.Models.SerialDTO;
-using LockboxControl.Core.Models;
+﻿using LockBoxControl.Core.Models.SerialDTO;
+using LockBoxControl.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LockboxControl.Core.Contracts;
+using LockBoxControl.Core.Contracts;
+using LockBoxControl.Core.Models;
 
-namespace LockboxControl.Core.Services
+namespace LockBoxControl.Core.Backend.Services
 {
     public class RequestManager
     {
