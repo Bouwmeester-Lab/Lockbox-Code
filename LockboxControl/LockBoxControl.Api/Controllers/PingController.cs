@@ -20,9 +20,13 @@ namespace LockBoxControl.Api.Controllers
             this.pingManager = pingManager;
         }
         [HttpPost("{macAddress}")]
-        public async Task RegisterMacAddressAsync([Required] string macAddress, CancellationToken cancellationToken = default)
+        public async Task<ActionResult> RegisterMacAddressAsync([Required] string macAddress, CancellationToken cancellationToken = default)
         {
-            await pingManager.RegisterArduinoAsync(macAddress, cancellationToken);
+            if(await pingManager.RegisterArduinoAsync(macAddress, cancellationToken))
+            {
+                return Ok();
+            }
+            return NotFound("The mac address wasn't found or the arduino serial ports are busy.");
         }
 
         [HttpPost]

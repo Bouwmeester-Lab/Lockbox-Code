@@ -55,13 +55,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
 // run migrations
-app.MigrateDatabaseAsync<DataContext>();
+await app.MigrateDatabaseAsync<DataContext>();
 
 app.Run();

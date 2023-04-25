@@ -85,7 +85,36 @@ public class PortManager
 
         if (!serialPort.IsOpen)
         {
-            serialPort.Open();
+            try
+            {
+                serialPort.Open();
+            }
+            catch(FileNotFoundException ex)
+            {
+
+                 var error = new SerialCommandStatus
+                {
+                    ErrorMessage = $"Could not open serial port {arduino.PortName} - {ex.Message}",
+                    IsOk = false,
+                    RequestId = request.Id,
+                    IsLongRunning = false,
+                };
+                await requestManager.ProcessRequestAsync(error, cancellationToken).ConfigureAwait(false); // saves the request as completed. It logs the result.
+                return error;
+            }
+            catch(UnauthorizedAccessException ex)
+            {
+                var error = new SerialCommandStatus
+                {
+                    ErrorMessage = $"Serial port {arduino.PortName} is in use!!\n {ex.Message}",
+                    IsOk = false,
+                    RequestId = request.Id,
+                    IsLongRunning = false,
+                };
+                await requestManager.ProcessRequestAsync(error, cancellationToken).ConfigureAwait(false); // saves the request as completed. It logs the result.
+                return error;
+            }
+            
         }
 
         // Send the command only if it's open
@@ -119,7 +148,7 @@ public class PortManager
         {
             var status = await SendCommandToSinglePortAsync(macCommand, arduino, cancellationToken).ConfigureAwait(false);
 
-           if(status != null && !status.IsLongRunning)
+           if(status != null && !status.IsLongRunning && status.IsOk)
            {
                 // the result is the mac address
                 var macAddress = status.Result?.ToString() ?? throw new InvalidOperationException("The result cannot be empty when obtaining the mac address.");

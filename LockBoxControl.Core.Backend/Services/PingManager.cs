@@ -21,7 +21,7 @@ public class PingManager
         this.arduinoService = arduinoService;
     }
 
-    public async Task RegisterArduinoAsync(string macAddress, CancellationToken cancellationToken = default)
+    public async Task<bool> RegisterArduinoAsync(string macAddress, CancellationToken cancellationToken = default)
     {
         var arduinos = await arduinoService.GetAllAsync(cancellationToken).ConfigureAwait(false);
         var results = new Dictionary<Arduino, Task<string?>>();
@@ -34,7 +34,7 @@ public class PingManager
         await Task.WhenAll(results.Values).ConfigureAwait(false);
 
         // we check which arduino has which this mac
-
+        var found = false;
         foreach(var (arduino, macTask) in results)
         {
             var address = await macTask;
@@ -42,9 +42,11 @@ public class PingManager
             {
                 arduino.MacAddress = macAddress.ToLowerInvariant();
                 await arduinoService.UpdateAsync(arduino, cancellationToken).ConfigureAwait(false);
+                found = true;
                 break; // we have found our match move on.
             }
         }
+        return found;
     }
 
     public async Task<ArduinoStatus?> UpdateStatusAsync(ArduinoStatusDTO arduinoStatus, CancellationToken cancellationToken = default)
