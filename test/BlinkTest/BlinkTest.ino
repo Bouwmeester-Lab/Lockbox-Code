@@ -131,7 +131,7 @@ public:
 // if you don't want to use DNS (and reduce your sketch size)
 // use the numeric IP instead of the name for the server: 192.168.0.192
 IPAddress server(192,168,0,192);  // numeric IP for test computer (no DNS)
-// char server[] = "965a8b2e-7ffc-42e9-b7cc-03bee4b9ee7b.mock.pstmn.io";    // name address for Google (using DNS)
+// char server[] = "c285049a-dcc9-4fce-8ae3-2cd62560db06.mock.pstmn.io";    // name address for Google (using DNS)
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server
@@ -177,7 +177,7 @@ void setupEthernet(){
   delay(1000);
 }
 
-bool printWebData = false; // set to false if you'd rather not print the server's response
+// bool printWebData = false; // set to false if you'd rather not print the server's response
 void registerMacWithServer(){
   if(debug){
     Serial.print("registering with ");
@@ -196,9 +196,10 @@ void registerMacWithServer(){
     
     // Make a HTTP request:
     // Serial.printf("POST /api/Ping/%02x-%02x-%02x-%02x-%02x-%02x HTTP/1.1\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-    // client.printf("POST /api/Ping/%02x-%02x-%02x-%02x-%02x-%02x HTTP/1.1\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-    client.println("POST /api/Ping/04-e9-e5-14-b7-69 HTTP/1.1"); //Ping/04-e9-e5-14-b7-69 HTTP/1.1");
-    client.println("Host: 965a8b2e-7ffc-42e9-b7cc-03bee4b9ee7b.mock.pstmn.io");
+    client.printf("POST /api/Ping/%02x-%02x-%02x-%02x-%02x-%02x HTTP/1.1", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    client.println();
+    // client.println("POST /api/Ping/04-e9-e5-14-b7-69 HTTP/1.1"); //Ping/04-e9-e5-14-b7-69 HTTP/1.1");
+    client.printf("Host: %u.%u.%u.%u\n", server[0], server[1], server[2], server[3]);
     client.println("accept: */*");
     client.println("Connection: close");
     client.println("Content-Length: 0");
@@ -214,31 +215,85 @@ void registerMacWithServer(){
 
 }
 
+void sendStatus(const char* status){
+  if(client.connect(server, 5106, false)){
+    if(debug){
+      Serial.print("connected to ");
+      Serial.println(client.remoteIP());
+      Serial.println(client.status());
+    }
+    client.printf("POST http://%u.%u.%u.%u/api/Ping HTTP/1.1", server[0], server[1], server[2], server[3]); //Ping/04-e9-e5-14-b7-69 HTTP/1.1");
+    client.println();
+
+    char buffer[100];
+    sprintf(buffer, "{\"status\":\"%s\",\"macAddress\":\"%02x-%02x-%02x-%02x-%02x-%02x\"}", status, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    int length = strlen(buffer);
+
+    client.printf("Content-Length: %i\n", length);
+    client.println("Content-Type: application/json");
+
+    client.printf("Host: %u.%u.%u.%u\n", server[0], server[1], server[2], server[3]);
+    client.println("Accept: text/plain");
+    
+    // client.println("Connection: close");
+
+    
+    //Serial.printf("content-length: %i\n", length);
+    
+    client.println();
+    // 
+    // body
+    client.println(buffer);
+    // client.println();
+    
+  }
+  else {
+    // if you didn't get a connection to the server:
+    if(debug){
+      Serial.println("connection failed");
+    }
+    
+  }
+
+}
+
 // the setup function runs once when you press reset or power the board
 void setup() {
   
   setupEthernet();
   registerMacWithServer();
-
+  // sendStatus("Locked");
 
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
+int lastStatus = 0;
+
 // the loop function runs over and over again forever
 void loop() {
+  if(millis() - lastStatus > 10000)
+  {
+    lastStatus = millis();
+    sendStatus("Locked");
+  }
+
   // if there are incoming bytes available
   // from the server, read them and print them:
   int len = client.available();
   if (len > 0) {
-    byte buffer[80];
-    if (len > 80) len = 80;
+    byte buffer[250];
+    if (len > 250) len = 250;
     client.read(buffer, len);
-    if (printWebData) {
+    if (debug) {
       Serial.write(buffer, len); // show in the serial monitor (slows some boards)
     }
+    // client.stop();
     // byteCount = byteCount + len;
   }
+
+  
+  
 
   if(Serial.available()){
     auto c = Serial.readStringUntil('\n');
