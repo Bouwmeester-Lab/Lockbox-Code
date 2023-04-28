@@ -13,7 +13,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LockboxControl.Storage", "L
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{B92DAF74-6AF6-4E49-B678-6825A0D27497}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockBoxControl.Core.Backend", "..\LockBoxControl.Core.Backend\LockBoxControl.Core.Backend.csproj", "{C02450DB-8558-45AC-8670-B53818FC9E15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LockBoxControl.Core.Backend", "..\LockBoxControl.Core.Backend\LockBoxControl.Core.Backend.csproj", "{C02450DB-8558-45AC-8670-B53818FC9E15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockBoxControl.Core.Frontend", "..\LockBoc.Control.Core.Frontend\LockBoxControl.Core.Frontend.csproj", "{ABF1B4FF-738D-4035-9A17-6FCFA568AC1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockBoxControl.Blazor.Client", "..\LockBoxControl.Blazor\Client\LockBoxControl.Blazor.Client.csproj", "{3ED3B7C9-329B-48F8-92A1-E36AECC44FC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockBoxControl.Blazor.Server", "..\LockBoxControl.Blazor\Server\LockBoxControl.Blazor.Server.csproj", "{75896DCA-1C2E-4C9A-BA6A-462335708BE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockBoxControl.Blazor.Shared", "..\LockBoxControl.Blazor\Shared\LockBoxControl.Blazor.Shared.csproj", "{0422E5B7-2082-4991-A967-B2741CE200DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockBoxControl.WebAssembly.Test", "..\LockBoxControl.WebAssembly.Test\LockBoxControl.WebAssembly.Test.csproj", "{66A0922A-D9C4-468B-B2F0-C4FE44CD1FBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +55,26 @@ Global
 		{C02450DB-8558-45AC-8670-B53818FC9E15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C02450DB-8558-45AC-8670-B53818FC9E15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C02450DB-8558-45AC-8670-B53818FC9E15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABF1B4FF-738D-4035-9A17-6FCFA568AC1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABF1B4FF-738D-4035-9A17-6FCFA568AC1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABF1B4FF-738D-4035-9A17-6FCFA568AC1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABF1B4FF-738D-4035-9A17-6FCFA568AC1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ED3B7C9-329B-48F8-92A1-E36AECC44FC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ED3B7C9-329B-48F8-92A1-E36AECC44FC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ED3B7C9-329B-48F8-92A1-E36AECC44FC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ED3B7C9-329B-48F8-92A1-E36AECC44FC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75896DCA-1C2E-4C9A-BA6A-462335708BE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75896DCA-1C2E-4C9A-BA6A-462335708BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75896DCA-1C2E-4C9A-BA6A-462335708BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75896DCA-1C2E-4C9A-BA6A-462335708BE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0422E5B7-2082-4991-A967-B2741CE200DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0422E5B7-2082-4991-A967-B2741CE200DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0422E5B7-2082-4991-A967-B2741CE200DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0422E5B7-2082-4991-A967-B2741CE200DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66A0922A-D9C4-468B-B2F0-C4FE44CD1FBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66A0922A-D9C4-468B-B2F0-C4FE44CD1FBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66A0922A-D9C4-468B-B2F0-C4FE44CD1FBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66A0922A-D9C4-468B-B2F0-C4FE44CD1FBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

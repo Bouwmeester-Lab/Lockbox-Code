@@ -12,8 +12,12 @@ namespace LockBoxControl.Core.Models
     {
         public required long Id { get; set; }
         [MaxLength(255)]
+        [MinLength(2)]
+        [Required]
         public required string Name { get; set; }
         [MaxLength(500)]
+        [MinLength(2)]
+        [Required]
         public required string Description { get; set; }
         [MaxLength(25)]
         public string? PortName { get; set; }

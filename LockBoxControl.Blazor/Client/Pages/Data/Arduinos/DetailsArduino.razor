@@ -1,0 +1,26 @@
+﻿@using LockBoxControl.Blazor.Client.Pages.Base;
+@using LockBoxControl.Core.Models;
+
+@inherits EditEntity<Arduino, long>
+
+@if(Entity is not null)
+{
+    
+        @if (ShowId)
+        {
+            <MudTextField @bind-Value=Entity.Id Label="@Resources.Strings.Id" Disabled=true />
+        }
+        <MudTextField @bind-Value=Entity.Name Label="@Resources.Strings.Name" Variant="Variant.Text" />
+        <MudTextField @bind-Value=Entity.Description Label="@Resources.Strings.Description" Variant="Variant.Text" />
+        <MudTextField @bind-Value=Entity.PortName Label="@Resources.Strings.PortName" />
+        
+        <MudTextField @bind-Value=Entity.MacAddress Label="@Resources.Strings.MacAddress" />
+        
+        <MudCheckBox @bind-Checked=Entity.IsEnabled Label="@Resources.Strings.IsEnabled" />
+    
+}
+
+
+@code {
+
+}

@@ -1,0 +1,13 @@
+﻿@using LockBoxControl.Core.Contracts;
+
+@typeparam TEntity where TEntity : IEntity<TId>
+@typeparam TId where TId : IEquatable<TId>
+
+
+
+@*<h3>EditEntity</h3>
+
+@if(Entity is not null)
+{
+    <MudField>@Entity.Id </MudField>
+}*@

@@ -5,11 +5,24 @@ using LockBoxControl.Storage.Models;
 using System.Text.Json.Serialization;
 using LockBoxControl.Core.Models;
 using LockBoxControl.Core.Backend.Services;
+//using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
+// Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("https://localhost:5001/")
+                .SetIsOriginAllowed((host) => true)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials(); 
+    });
+});
 
 //configure ports:
 builder.Services.Configure<PortConfiguration>(builder.Configuration.GetSection(nameof(PortConfiguration)));
@@ -42,6 +55,9 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+//builder.Services.AddRazorPages();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -60,6 +76,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseCors();
 
 // run migrations
 await app.MigrateDatabaseAsync<DataContext>();
