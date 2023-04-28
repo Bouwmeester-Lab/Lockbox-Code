@@ -16,7 +16,8 @@ namespace LockBoxControl.Core.Models
         [Required]
         public required string Name { get; set; }
         [MaxLength(500)]
-        [MinLength(2)]
+        //[MinLength(3)]
+        [StringLength(500, ErrorMessage = "Description must be at least 3 characters long and 500 max.", MinimumLength = 3)]
         [Required]
         public required string Description { get; set; }
         [MaxLength(25)]

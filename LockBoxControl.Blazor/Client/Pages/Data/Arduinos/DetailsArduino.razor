@@ -10,13 +10,19 @@
         {
             <MudTextField @bind-Value=Entity.Id Label="@Resources.Strings.Id" Disabled=true />
         }
-        <MudTextField @bind-Value=Entity.Name Label="@Resources.Strings.Name" Variant="Variant.Text" />
-        <MudTextField @bind-Value=Entity.Description Label="@Resources.Strings.Description" Variant="Variant.Text" />
-        <MudTextField @bind-Value=Entity.PortName Label="@Resources.Strings.PortName" />
-        
-        <MudTextField @bind-Value=Entity.MacAddress Label="@Resources.Strings.MacAddress" />
-        
-        <MudCheckBox @bind-Checked=Entity.IsEnabled Label="@Resources.Strings.IsEnabled" />
+        <MudTextField @bind-Value=Entity.Name Label="@Resources.Strings.Name" Required=true
+                        For="@(() => Entity.Name)"
+                        Variant="Variant.Text" />
+        <MudTextField @bind-Value=Entity.Description
+                        Label="@Resources.Strings.Description"
+                        Required=true Variant="Variant.Text"
+                        For="@(() => Entity.Description)"
+                        Lines="3" />
+    <MudTextField @bind-Value=Entity.PortName Label="@Resources.Strings.PortName" For="@(() => Entity.PortName)" />
+
+    <MudTextField @bind-Value=Entity.MacAddress Label="@Resources.Strings.MacAddress" For="@(() => Entity.MacAddress)" />
+
+    <MudCheckBox @bind-Checked=Entity.IsEnabled Label="@Resources.Strings.IsEnabled" For="@(() => Entity.IsEnabled)" />
     
 }
 
