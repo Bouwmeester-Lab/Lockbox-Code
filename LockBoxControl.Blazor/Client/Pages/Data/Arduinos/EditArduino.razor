@@ -1,0 +1,29 @@
+﻿<h3>Edit Arduino</h3>
+@using LockBoxControl.Blazor.Client.Pages.Base;
+@using LockBoxControl.Core.Frontend.Models;
+@using LockBoxControl.Core.Models;
+
+@inherits EditEntity<Arduino, long>
+
+
+<EditForm Model="Entity" OnValidSubmit="@SubmitAsync">
+    <DataAnnotationsValidator />
+    <MudCard>
+        <MudCardHeader>
+            <h3>@Resources.Strings.AddArduino</h3>
+        </MudCardHeader>
+        <MudCardContent>
+            <DetailsArduino Entity="@Entity" ShowId=false SubmitAction="SubmitActions.None" />
+            <MudText Color="@Color.Error">
+                <ValidationSummary />
+            </MudText>
+        </MudCardContent>
+        <MudCardActions Class="justify-center">
+            <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Cancel" Label="@Resources.Strings.Cancel" OnClick="@(x => IsFinished = true)" />
+            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save" Label="@string.Format(Resources.Strings.UpdateButton, nameof(Arduino))" ButtonType="ButtonType.Submit" />
+        </MudCardActions>
+    </MudCard>
+</EditForm>
+@code {
+
+}

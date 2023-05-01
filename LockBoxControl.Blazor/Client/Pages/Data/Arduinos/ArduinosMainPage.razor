@@ -1,7 +1,93 @@
 ﻿@page "/arduinos"
+@using LockBoxControl.Blazor.Client.Pages.Base;
+@using LockBoxControl.Core.Models;
+
+@inherits EditEntity<Arduino, long>
+
 <h3>ArduinosMainPage</h3>
+<MudPaper Elevation="25">
+    <MudToolBar>
+        
+        <MudIconButton Icon="@Icons.Material.Outlined.Edit" />
+        
+        <MudIconButton Icon="@Icons.Material.Outlined.Settings" Color="Color.Inherit" />
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Outlined.Notifications" />
+        <MudIconButton Icon="@Icons.Material.Outlined.PushPin" />
+        <MudIconButton Icon="@Icons.Material.Outlined.PeopleAlt" />
+        <MudIconButton Icon="@Icons.Material.Outlined.MoreVert" Color="Color.Inherit" />
+    </MudToolBar>
+</MudPaper>
+<MudDataGrid T=Arduino 
+             Items=Arduinos 
+             EditMode="DataGridEditMode.Form"
+             ReadOnly=false
+             StartedEditingItem=@StartedEditingItem
+             CommittedItemChanges=@CommitChangesAsync
+             
+             EditTrigger="DataGridEditTrigger.OnRowClick"
+>
+    <ToolBarContent>
+        <MudIconButton Icon="@Icons.Material.Outlined.Add" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Remove" Color="Color.Inherit" />
+    </ToolBarContent>
+    <Columns>
+        <SelectColumn T="Arduino" />
+        <PropertyColumn Property="x => x.Name" Title="@Resources.Strings.Name" />
+        <PropertyColumn Property="x => x.Description" Title="@Resources.Strings.Description" >
+            <EditTemplate>
+                @if (context.Item is not null)
+                {
+                    <MudTextField @bind-Value=context.Item.Description
+                                  Label="@Resources.Strings.Description"
+                                  Required=true
+                                  Variant="Variant.Outlined"
+                                  For="@(() => context.Item.Description)"
+                                  Lines="5" />
+                }
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.PortName" Title="@Resources.Strings.PortName">
+            <EditTemplate>
+                @if (context.Item is not null)
+                {
+                    <MudTextField @bind-Value=context.Item.PortName
+                                  Label="@Resources.Strings.PortName" 
+                                  For="@(() => context.Item.PortName)"
+                                  Variant="Variant.Outlined" />
+                }
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.IsEnabled" Title="@Resources.Strings.IsEnabled">
+            <EditTemplate>
+                @if(context.Item is not null)
+                {
+                <MudCheckBox @bind-Checked=context.Item.IsEnabled
+                    Label="@Resources.Strings.IsEnabled"
+                    For="@(() => context.Item.IsEnabled)"
+                     />
+                }
+            </EditTemplate>
+            </PropertyColumn>
+        <PropertyColumn Property="x => x.MacAddress" Title="@Resources.Strings.MacAddress">
+            <EditTemplate>
+                @if(context.Item is not null)
+                {
+                    <MudTextField @bind-Value=context.Item.MacAddress
+                                  Label="@Resources.Strings.MacAddress"
+                                  For="@(() => context.Item.MacAddress)"
+                                  Variant="@Variant.Outlined" />
+                }
+            </EditTemplate>
+        </PropertyColumn>
+        <TemplateColumn CellClass="d-flex justify-end">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Arduino"  />
+    </PagerContent>
+</MudDataGrid>
 
-<AddArduino />
-@code {
-
-}

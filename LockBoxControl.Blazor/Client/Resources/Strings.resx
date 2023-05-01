@@ -120,11 +120,20 @@
   <data name="AddArduino" xml:space="preserve">
     <value>Add an Arduino</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
   <data name="CreateButton" xml:space="preserve">
     <value>Create New {0}</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
+  </data>
+  <data name="FailedCreate" xml:space="preserve">
+    <value>Failed to create {0}</value>
+  </data>
+  <data name="FailedUpdate" xml:space="preserve">
+    <value>Failed to update {0} with Id = {1}. Error: {2}</value>
   </data>
   <data name="Id" xml:space="preserve">
     <value>Id</value>
@@ -140,5 +149,14 @@
   </data>
   <data name="PortName" xml:space="preserve">
     <value>Port Name</value>
+  </data>
+  <data name="SuccessCreate" xml:space="preserve">
+    <value>Succesfully created {0} with Id = {1}</value>
+  </data>
+  <data name="SuccessUpdate" xml:space="preserve">
+    <value>Succesfully updated {0} with Id = {1}</value>
+  </data>
+  <data name="UpdateButton" xml:space="preserve">
+    <value>Update {0}</value>
   </data>
 </root>

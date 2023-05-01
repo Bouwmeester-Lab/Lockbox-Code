@@ -70,6 +70,15 @@ namespace LockBoxControl.Blazor.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create New {0}.
         /// </summary>
         public static string CreateButton {
@@ -84,6 +93,24 @@ namespace LockBoxControl.Blazor.Client.Resources {
         public static string Description {
             get {
                 return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create {0}.
+        /// </summary>
+        public static string FailedCreate {
+            get {
+                return ResourceManager.GetString("FailedCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to update {0} with Id = {1}. Error: {2}.
+        /// </summary>
+        public static string FailedUpdate {
+            get {
+                return ResourceManager.GetString("FailedUpdate", resourceCulture);
             }
         }
         
@@ -129,6 +156,33 @@ namespace LockBoxControl.Blazor.Client.Resources {
         public static string PortName {
             get {
                 return ResourceManager.GetString("PortName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Succesfully created {0} with Id = {1}.
+        /// </summary>
+        public static string SuccessCreate {
+            get {
+                return ResourceManager.GetString("SuccessCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Succesfully updated {0} with Id = {1}.
+        /// </summary>
+        public static string SuccessUpdate {
+            get {
+                return ResourceManager.GetString("SuccessUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update {0}.
+        /// </summary>
+        public static string UpdateButton {
+            get {
+                return ResourceManager.GetString("UpdateButton", resourceCulture);
             }
         }
     }

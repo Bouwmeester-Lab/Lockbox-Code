@@ -72,7 +72,7 @@ namespace LockBoxControl.Core.Frontend.Services
 
         public async Task<PagedResult<TEntity>?> GetPageAsync(int pageNumber, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var response = await httpClient.GetAsync($"{Path}/page", cancellationToken).ConfigureAwait(false);
+            var response = await httpClient.GetAsync($"{Path}/page?pageNumber={pageNumber}&pageSize={pageSize}", cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<PagedResult<TEntity>>(cancellationToken: cancellationToken).ConfigureAwait(false);
