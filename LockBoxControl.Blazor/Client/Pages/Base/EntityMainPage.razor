@@ -1,0 +1,38 @@
+﻿@using LockBoxControl.Core.Contracts;
+
+@typeparam T where T : IEntity<TId>
+@typeparam TId where TId : IEquatable<TId>
+
+@inherits EditEntity<T, TId>
+@if (IsLoading)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="500px" />
+}
+else
+{
+
+    <MudDataGrid T=T
+                 Items=Items
+                 EditMode="DataGridEditMode.Form"
+                 ReadOnly=false
+                 CommittedItemChanges=@CommitChangesAsync
+                 EditTrigger="DataGridEditTrigger.OnRowClick">
+        <ToolBarContent>
+            <MudIconButton Icon="@Icons.Material.Outlined.Add" />
+            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Inherit" />
+        </ToolBarContent>
+        <Columns>
+            <SelectColumn T="T" />
+            @OtherColumns
+        </Columns>
+
+        <PagerContent>
+
+        </PagerContent>
+    </MudDataGrid>
+}
+@*StartedEditingItem=@StartedEditingItem*@
+@code {
+
+}
+
