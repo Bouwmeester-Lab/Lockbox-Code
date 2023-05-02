@@ -123,11 +123,17 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="CommandLetter" xml:space="preserve">
+    <value>Command Letter</value>
+  </data>
   <data name="CreateButton" xml:space="preserve">
     <value>Create New {0}</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
+  </data>
+  <data name="EntityIsNull" xml:space="preserve">
+    <value>There is no entity associated with this add button dialog for type {0}</value>
   </data>
   <data name="FailedCreate" xml:space="preserve">
     <value>Failed to create {0}</value>

@@ -8,7 +8,14 @@
 <MudPaper Elevation="25">
     <EntityMainPage T="Command" TId="long" Entity="Entity">
         <AddTemplate>
-            
+            <AddCommand Entity="Entity">
+                <DetailsForm Context="entity">
+                    <CommandDetails Command="entity" />
+                </DetailsForm>
+                @*<DetailsForm Context="entity">
+                    <CommandDetails Command="entity" />
+                </DetailsForm>*@
+            </AddCommand>
         </AddTemplate>
         <OtherColumns>
             <PropertyColumn Property="x => x.Name" Title="@Resources.Strings.Name" />
@@ -61,7 +68,3 @@
         </OtherColumns>
     </EntityMainPage>
 </MudPaper>
-
-@code {
-
-}

@@ -57,9 +57,13 @@ else
                     <CascadingValue IsFixed=true Value="this">
                         @AddTemplate(Entity)
                     </CascadingValue>
-                    
+
                 }
-                </MudCardContent>
+                else
+                {
+                    <MudAlert Severity="Severity.Error">@string.Format(Resources.Strings.EntityIsNull, typeof(T).Name)</MudAlert>
+                }
+            </MudCardContent>
             </MudCard>
             
         </DialogContent>

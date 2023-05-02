@@ -79,6 +79,15 @@ namespace LockBoxControl.Blazor.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command Letter.
+        /// </summary>
+        public static string CommandLetter {
+            get {
+                return ResourceManager.GetString("CommandLetter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create New {0}.
         /// </summary>
         public static string CreateButton {
@@ -93,6 +102,15 @@ namespace LockBoxControl.Blazor.Client.Resources {
         public static string Description {
             get {
                 return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no entity associated with this add button dialog for type {0}.
+        /// </summary>
+        public static string EntityIsNull {
+            get {
+                return ResourceManager.GetString("EntityIsNull", resourceCulture);
             }
         }
         

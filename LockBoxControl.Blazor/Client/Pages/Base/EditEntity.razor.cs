@@ -19,7 +19,7 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
         protected ICrudClient<TEntity, TId>? Client { get; set; }
 
         [Inject]
-        protected ISnackbar Snackbar { get; set; }
+        protected ISnackbar? Snackbar { get; set; }
 
         [Parameter]
         public TEntity? Entity { get; set; }
@@ -34,6 +34,7 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
 
         public EditEntity()
         {
+            ResetForm();
         }
 
         public virtual void ResetForm()

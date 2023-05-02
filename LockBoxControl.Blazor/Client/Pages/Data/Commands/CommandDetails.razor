@@ -1,0 +1,23 @@
+﻿@using LockBoxControl.Blazor.Client.Pages.Base;
+@using LockBoxControl.Core.Models;
+
+<DetailsEntity TEntity="Command" TId="long" Entity="Command">
+    @if(context is not null)
+    {
+        <MudTextField @bind-Value=context.Name 
+                      Label="@Resources.Strings.Name" Required=true
+                      For="@(() => context.Name)"
+                      Variant="Variant.Text" />
+        <MudTextField @bind-Value=context.CommandLetter Label="@Resources.Strings.CommandLetter"
+                      Required=true
+                      For="@(() => context.CommandLetter)"
+                      Variant="Variant.Text" />
+    }
+</DetailsEntity>
+    
+
+@code{
+    [Parameter]
+    public Command? Command { get; set; }
+}
+

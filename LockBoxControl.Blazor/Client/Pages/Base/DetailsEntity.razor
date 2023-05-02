@@ -1,0 +1,28 @@
+﻿@using LockBoxControl.Blazor.Client.Pages.Base;
+@using LockBoxControl.Core.Contracts;
+@using LockBoxControl.Core.Models;
+
+@typeparam TEntity where TEntity : IEntity<TId>
+@typeparam TId where TId : IEquatable<TId>
+
+@inherits EditEntity<TEntity, TId>
+
+@if(Entity is not null)
+{
+    @if (ShowId)
+    {
+        <MudTextField @bind-Value=Entity.Id Label="@Resources.Strings.Id" Disabled=true />
+    }
+    if(ChildContent is not null)
+    {
+        @ChildContent(Entity)
+    }
+    
+}
+
+@code {
+    [Parameter]
+    public bool ShowId { get; set; }
+    [Parameter]
+    public RenderFragment<TEntity>? ChildContent { get; set; }
+}

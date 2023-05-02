@@ -1,0 +1,41 @@
+﻿@using LockBoxControl.Blazor.Client.Pages.Base;
+@using LockBoxControl.Core.Contracts;
+@using LockBoxControl.Core.Frontend.Models;
+@using LockBoxControl.Core.Models;
+
+@typeparam TEntity where TEntity : IEntity<TId>
+@typeparam TId where TId : IEquatable<TId>
+
+@inherits EditEntity<TEntity, TId>
+
+
+<EditForm Model="Entity" OnValidSubmit="@SubmitAsync">
+    <DataAnnotationsValidator />
+    <MudCard Elevation="25">
+        @*<MudCardHeader>
+            <h3>@Resources.Strings.AddArduino</h3>
+        </MudCardHeader>*@
+        <MudCardContent>
+            @*<DetailsArduino Entity="@Entity" ShowId=false SubmitAction="SubmitActions.None" />*@
+            @if(DetailsForm is not null && Entity is not null)
+            {
+                @DetailsForm(Entity)
+            }
+            <MudText Color="@Color.Error">
+                <ValidationSummary />
+            </MudText>
+        </MudCardContent>
+        <MudCardActions Class="justify-center d-flex gap-4">
+            <MudFab Color="Color.Dark"
+                    StartIcon="@Icons.Material.Filled.Refresh"
+                    Label="@Resources.Strings.ResetForm"
+            @onclick=ResetForm />
+            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save" Label="@string.Format(Resources.Strings.CreateButton, typeof(TEntity).Name)" ButtonType="ButtonType.Submit" />
+        </MudCardActions>
+    </MudCard>
+</EditForm>
+@code {
+    [Parameter] public RenderFragment<TEntity>? DetailsForm { get; set; }
+
+    
+}

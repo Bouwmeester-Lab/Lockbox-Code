@@ -1,0 +1,9 @@
+﻿@namespace LockBoxControl.Blazor.Client.Pages.Data.Commands
+@using LockBoxControl.Blazor.Client.Pages.Base;
+@using LockBoxControl.Core.Models;
+
+@inherits AddEntity<Command, long>
+
+@{
+    base.BuildRenderTree(__builder);
+}
