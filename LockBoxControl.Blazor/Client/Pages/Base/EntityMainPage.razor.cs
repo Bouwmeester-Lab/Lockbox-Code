@@ -44,6 +44,21 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
             ResetForm();
         }
 
+        public void AddItem(T item)
+        {
+            TotalElements++;
+            Items.Add(item);
+            StateHasChanged();
+        }
+
+        public void RemoveItem(T item)
+        {
+            if (Items.Remove(item))
+            {
+                TotalElements--;
+            }
+        }
+
         protected async Task DeleteAsync()
         {
             ArgumentNullException.ThrowIfNull(Client);
@@ -62,7 +77,7 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
                 DataGrid?.Selection.Clear();
 
                 // get the right number of total items
-                TotalElements = await Client.GetCountAsync();
+            TotalElements = await Client.GetCountAsync();
 
                 // reload page if the items is empty
                 if (!Items.Any())

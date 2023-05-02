@@ -13,6 +13,8 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
         where TEntity : IEntity<TId>
         where TId : IEquatable<TId>
     {
+        [CascadingParameter] public EntityMainPage<TEntity, TId>? MainPage { get; set; }
+
         [Inject]
         protected ICrudClient<TEntity, TId>? Client { get; set; }
 
@@ -24,6 +26,9 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
 
         [Parameter]
         public bool IsFinished { get; set; } = false;
+
+        [Parameter]
+        public EventCallback<TEntity> ItemCreated { get; set; }
 
         protected bool success;
 
@@ -48,6 +53,8 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
                 if(entity is not null)
                 {
                     Snackbar.Add(string.Format(Strings.SuccessCreate, typeof(TEntity).Name, entity.Id), Severity.Success);
+                    MainPage?.AddItem(entity);
+                    await ItemCreated.InvokeAsync(entity);
                 }
                 else
                 {

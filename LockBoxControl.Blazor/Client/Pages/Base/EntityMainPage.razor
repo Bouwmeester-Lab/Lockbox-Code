@@ -54,7 +54,10 @@ else
                 <MudCardContent>
                 @if (Entity is not null && AddTemplate is not null)
                 {
-                    @AddTemplate(Entity)
+                    <CascadingValue IsFixed=true Value="this">
+                        @AddTemplate(Entity)
+                    </CascadingValue>
+                    
                 }
                 </MudCardContent>
             </MudCard>
