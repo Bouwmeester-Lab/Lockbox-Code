@@ -34,7 +34,12 @@ else
         </Columns>
 
         <PagerContent>
-            <Pager />
+        <Pager @bind-CurrentPage=PageNumber 
+               TotalElements=TotalElements 
+               RowsPerPageChanged=OnRowsPerPageChanged
+               OnFirstPageRequested="@(async () => await LoadItemsAsync(1, PageSize))"
+               PageChangedRequested="@(async (pageNumber) => await LoadItemsAsync(pageNumber, PageSize))"
+               />
         </PagerContent>
     </MudDataGrid>
     <MudDialog @bind-IsVisible=isAddDialogOpen>

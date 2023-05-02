@@ -18,7 +18,7 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
         public RenderFragment<T>? AddTemplate { get; set; }
 
         public int PageNumber { get; set; }
-        public int TotalPages { get; set; }
+        public int TotalElements { get; set; }
         public int PageSize { get; set; } = 10;
 
         public bool IsEditing { get; set; } = false;
@@ -60,8 +60,34 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
                 await Task.WhenAll(tasks);
                 // clear selection
                 DataGrid?.Selection.Clear();
+
+                // get the right number of total items
+                TotalElements = await Client.GetCountAsync();
+
+                // reload page if the items is empty
+                if (!Items.Any())
+                {
+                    if(PageNumber > 1)
+                    {
+                        PageNumber -= 1;
+                    }
+                    else
+                    {
+                        PageNumber = 1;
+                    }
+
+                    await LoadItemsAsync(PageNumber, PageSize);
+                }
             }
         }
+
+        protected async Task OnRowsPerPageChanged(int rowsPerPage)
+        {
+            PageSize = rowsPerPage;
+            await LoadItemsAsync(PageNumber, PageSize);
+        }
+
+        
 
         protected async Task DeleteItemAsync(T item)
         {
@@ -71,6 +97,10 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
 
             // get rid of the local copy
             Items.Remove(item);
+
+            
+
+            
         }
 
 
@@ -87,7 +117,7 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
             }
 
             PageNumber = page.PageNumber;
-            TotalPages = page.TotalPages;
+            TotalElements = page.TotalMatches;
 
             // clear
             Items.Clear();
