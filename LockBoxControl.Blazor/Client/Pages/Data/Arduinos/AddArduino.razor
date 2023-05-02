@@ -7,7 +7,7 @@
 
 <EditForm Model="Entity" OnValidSubmit="@SubmitAsync">
     <DataAnnotationsValidator />
-    <MudCard>
+    <MudCard Elevation="25">
         <MudCardHeader>
             <h3>@Resources.Strings.AddArduino</h3>
         </MudCardHeader>
@@ -17,8 +17,11 @@
                 <ValidationSummary />
             </MudText>
         </MudCardContent>
-        <MudCardActions Class="justify-center">
-            
+        <MudCardActions Class="justify-center d-flex gap-4">
+            <MudFab Color="Color.Dark" 
+                    StartIcon="@Icons.Material.Filled.Refresh"
+                    Label="@Resources.Strings.ResetForm"
+                    @onclick=ResetForm />
             <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save" Label="@string.Format(Resources.Strings.CreateButton, nameof(Arduino))" ButtonType="ButtonType.Submit" />
         </MudCardActions>
     </MudCard>

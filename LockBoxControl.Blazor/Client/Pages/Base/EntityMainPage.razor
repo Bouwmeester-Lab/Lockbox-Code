@@ -4,33 +4,59 @@
 @typeparam TId where TId : IEquatable<TId>
 
 @inherits EditEntity<T, TId>
-@if (IsLoading)
+@*@if (IsLoading)
 {
     <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="500px" />
 }
 else
-{
+{*@
 
     <MudDataGrid T=T
+                @ref=DataGrid
+                Loading=IsLoading
                  Items=Items
                  EditMode="DataGridEditMode.Form"
                  ReadOnly=false
                  CommittedItemChanges=@CommitChangesAsync
                  EditTrigger="DataGridEditTrigger.OnRowClick">
         <ToolBarContent>
-            <MudIconButton Icon="@Icons.Material.Outlined.Add" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Inherit" />
+            <MudIconButton Icon="@Icons.Material.Outlined.Add" @onclick="(() => isAddDialogOpen = true)" />
+            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Inherit" @onclick=DeleteAsync />
         </ToolBarContent>
         <Columns>
             <SelectColumn T="T" />
             @OtherColumns
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
+                </CellTemplate>
+            </TemplateColumn>
         </Columns>
 
         <PagerContent>
-
+            <Pager />
         </PagerContent>
     </MudDataGrid>
-}
+    <MudDialog @bind-IsVisible=isAddDialogOpen>
+        <TitleContent>
+        <div class="justify-end d-flex">
+            <MudIconButton Icon="@Icons.Material.Filled.Close" @onclick=ClosePopup />
+            </div>
+        
+        </TitleContent>
+        <DialogContent>
+            <MudCard Elevation="0" Style="min-width: 400px">
+                <MudCardContent>
+                @if (Entity is not null && AddTemplate is not null)
+                {
+                    @AddTemplate(Entity)
+                }
+                </MudCardContent>
+            </MudCard>
+            
+        </DialogContent>
+    </MudDialog>
+@*}*@
 @*StartedEditingItem=@StartedEditingItem*@
 @code {
 

@@ -31,6 +31,11 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
         {
         }
 
+        public virtual void ResetForm()
+        {
+
+        }
+
         public virtual async Task CreateNewAsync(CancellationToken cancellationToken = default)
         {
             if(Entity is not null && Client is not null)

@@ -160,6 +160,15 @@ namespace LockBoxControl.Blazor.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset Form.
+        /// </summary>
+        public static string ResetForm {
+            get {
+                return ResourceManager.GetString("ResetForm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Succesfully created {0} with Id = {1}.
         /// </summary>
         public static string SuccessCreate {

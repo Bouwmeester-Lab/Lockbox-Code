@@ -16,6 +16,7 @@ namespace LockBoxControl.Blazor.Client.Pages.Data.Arduinos
 
         public bool IsEditing { get; set; } = false;
         
+        public Arduino EmptyArduino { get; set; } = new Arduino { Description = "", Id = 0 , Name = "", IsEnabled = false};
 
         protected ObservableCollection<Arduino> Arduinos { get; set; } = new ObservableCollection<Arduino>();
 

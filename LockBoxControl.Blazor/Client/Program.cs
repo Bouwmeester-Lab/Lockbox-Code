@@ -1,4 +1,5 @@
 using LockBoxControl.Blazor.Client;
+using LockBoxControl.Blazor.Client.Extensions;
 using LockBoxControl.Core.Frontend.Contracts;
 using LockBoxControl.Core.Frontend.Services;
 using LockBoxControl.Core.Models;
@@ -14,11 +15,10 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-builder.Services.AddHttpClient<ICrudClient<Arduino, long>, CrudClient<Arduino, long>>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["BaseApiAddress"]
-        ?? throw new ArgumentNullException("BaseApiAddress"));
-});
+builder.Services.AddApiClient<Arduino>(builder.Configuration);
+builder.Services.AddApiClient<Command>(builder.Configuration);
+builder.Services.AddApiClient<ArduinoStatus, Guid>(builder.Configuration);
+builder.Services.AddApiClient<Request, Guid>(builder.Configuration);
 
 
 builder.Services.AddMudServices();

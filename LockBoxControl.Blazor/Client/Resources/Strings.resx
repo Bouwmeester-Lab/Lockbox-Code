@@ -150,6 +150,9 @@
   <data name="PortName" xml:space="preserve">
     <value>Port Name</value>
   </data>
+  <data name="ResetForm" xml:space="preserve">
+    <value>Reset Form</value>
+  </data>
   <data name="SuccessCreate" xml:space="preserve">
     <value>Succesfully created {0} with Id = {1}</value>
   </data>

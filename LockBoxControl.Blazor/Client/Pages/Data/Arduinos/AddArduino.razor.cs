@@ -18,5 +18,17 @@ namespace LockBoxControl.Blazor.Client.Pages.Data.Arduinos
             };
             SubmitAction = SubmitActions.Create;
         }
+
+        public override void ResetForm()
+        {
+            Entity = new Arduino
+            {
+                Description = "",
+                Name = "",
+                Id = 0,
+                IsEnabled = true,
+                PortName = ""
+            };
+        }
     }
 }

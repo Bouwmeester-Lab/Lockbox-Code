@@ -1,18 +1,18 @@
-﻿@page "/arduinos"
+﻿@page "/commands"
 @using LockBoxControl.Blazor.Client.Pages.Base;
 @using LockBoxControl.Core.Models;
 
-@inherits EditEntity<Arduino, long>
+@inherits EditEntity<Command, long>
 
-<h3>ArduinosMainPage</h3>
+<h3>Commands Main Page</h3>
 <MudPaper Elevation="25">
-    <EntityMainPage T="Arduino" TId="long" Entity="EmptyArduino">
+    <EntityMainPage T="Command" TId="long" Entity="Entity">
         <AddTemplate>
-            <AddArduino Entity="context" />
+            
         </AddTemplate>
         <OtherColumns>
             <PropertyColumn Property="x => x.Name" Title="@Resources.Strings.Name" />
-            <PropertyColumn T=Arduino TProperty=string Property="x => x.Description" Title="@Resources.Strings.Description">
+            <PropertyColumn Property="x => x.Description" Title="@Resources.Strings.Description">
                 <EditTemplate>
                     @if (context.Item is not null)
                     {
@@ -25,18 +25,18 @@
                     }
                 </EditTemplate>
             </PropertyColumn>
-            <PropertyColumn Property="x => x.PortName" Title="@Resources.Strings.PortName">
+            <PropertyColumn Property="x => x.CommandLetter" Title="@Resources.Strings.PortName">
                 <EditTemplate>
                     @if (context.Item is not null)
                     {
-                        <MudTextField @bind-Value=context.Item.PortName
+                        <MudTextField @bind-Value=context.Item.CommandLetter
                                       Label="@Resources.Strings.PortName"
-                                      For="@(() => context.Item.PortName)"
+                                      For="@(() => context.Item.CommandLetter)"
                                       Variant="Variant.Outlined" />
                     }
                 </EditTemplate>
             </PropertyColumn>
-            <PropertyColumn Property="x => x.IsEnabled" Title="@Resources.Strings.IsEnabled">
+            @*<PropertyColumn Property="x => x.IsEnabled" Title="@Resources.Strings.IsEnabled">
                 <EditTemplate>
                     @if (context.Item is not null)
                     {
@@ -56,30 +56,12 @@
                                       Variant="@Variant.Outlined" />
                     }
                 </EditTemplate>
-            </PropertyColumn>
+            </PropertyColumn>*@
             
         </OtherColumns>
     </EntityMainPage>
-</MudPaper>@*
-<MudDataGrid T=Arduino 
-             Items=Arduinos 
-             EditMode="DataGridEditMode.Form"
-             ReadOnly=false
-             StartedEditingItem=@StartedEditingItem
-             CommittedItemChanges=@CommitChangesAsync
-             
-             EditTrigger="DataGridEditTrigger.OnRowClick"
->
-    <ToolBarContent>
-        <MudIconButton Icon="@Icons.Material.Outlined.Add" />
-        <MudIconButton Icon="@Icons.Material.Outlined.Remove" Color="Color.Inherit" />
-    </ToolBarContent>
-    <Columns>
-        <SelectColumn T="Arduino" />
-        
-    </Columns>
-    <PagerContent>
-        <MudDataGridPager T="Arduino"  />
-    </PagerContent>
-</MudDataGrid>
-*@
+</MudPaper>
+
+@code {
+
+}

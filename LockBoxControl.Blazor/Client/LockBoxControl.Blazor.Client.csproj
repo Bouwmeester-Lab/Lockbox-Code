@@ -34,4 +34,9 @@
 	  </EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Pages\Data\Statuses\" />
+	  <Folder Include="Pages\Data\Requests\" />
+	</ItemGroup>
+
 </Project>
