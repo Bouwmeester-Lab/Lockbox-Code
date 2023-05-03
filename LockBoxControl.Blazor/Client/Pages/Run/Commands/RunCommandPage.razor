@@ -8,7 +8,9 @@
 
 <MudCard>
     <MudCardHeader>
-        @Resources.Strings.RunCommandTitlePage
+        <MudText Typo="Typo.h3">
+            @Resources.Strings.RunCommandTitlePage
+        </MudText>
     </MudCardHeader>
     <MudCardContent>
         <MudSelect T="Command" Label="@Resources.Strings.SelectCommand" @bind-Value=SelectedCommand>
