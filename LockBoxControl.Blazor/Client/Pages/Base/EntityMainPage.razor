@@ -27,6 +27,7 @@ else
         }
         
             <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Inherit" @onclick=DeleteAsync />
+            <MudIconButton Icon="@Icons.Material.Outlined.Refresh" Color="Color.Inherit" @onclick="@(async () => await LoadItemsAsync(PageNumber, PageSize))" />
         </ToolBarContent>
         <Columns>
             <SelectColumn T="T" />
