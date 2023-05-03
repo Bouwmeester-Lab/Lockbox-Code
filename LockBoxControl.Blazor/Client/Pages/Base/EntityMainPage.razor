@@ -12,25 +12,33 @@ else
 {*@
 
     <MudDataGrid T=T
-                @ref=DataGrid
-                Loading=IsLoading
+                 
+                 @ref=DataGrid
+                 Loading=IsLoading
                  Items=Items
                  EditMode="DataGridEditMode.Form"
-                 ReadOnly=false
+                 ReadOnly=@IsReadOnly
                  CommittedItemChanges=@CommitChangesAsync
                  EditTrigger="DataGridEditTrigger.OnRowClick">
         <ToolBarContent>
+        @if(AddTemplate is not null)
+        {
             <MudIconButton Icon="@Icons.Material.Outlined.Add" @onclick="(() => isAddDialogOpen = true)" />
+        }
+        
             <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Inherit" @onclick=DeleteAsync />
         </ToolBarContent>
         <Columns>
             <SelectColumn T="T" />
             @OtherColumns
+        @if (!IsReadOnly)
+        {
             <TemplateColumn CellClass="d-flex justify-end">
                 <CellTemplate>
                     <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
                 </CellTemplate>
             </TemplateColumn>
+        }
         </Columns>
 
         <PagerContent>

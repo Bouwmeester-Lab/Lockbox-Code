@@ -120,11 +120,23 @@
   <data name="AddArduino" xml:space="preserve">
     <value>Add an Arduino</value>
   </data>
+  <data name="ArduinoName" xml:space="preserve">
+    <value>Arduino's Name</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
   <data name="CommandLetter" xml:space="preserve">
     <value>Command Letter</value>
+  </data>
+  <data name="CommandName" xml:space="preserve">
+    <value>Command Name</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="CompletedOn" xml:space="preserve">
+    <value>Request Completed On</value>
   </data>
   <data name="CreateButton" xml:space="preserve">
     <value>Create New {0}</value>
@@ -156,8 +168,14 @@
   <data name="PortName" xml:space="preserve">
     <value>Port Name</value>
   </data>
+  <data name="RequestedOn" xml:space="preserve">
+    <value>Requested On</value>
+  </data>
   <data name="ResetForm" xml:space="preserve">
     <value>Reset Form</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Succes</value>
   </data>
   <data name="SuccessCreate" xml:space="preserve">
     <value>Succesfully created {0} with Id = {1}</value>

@@ -12,6 +12,9 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
         protected ObservableCollection<T> Items { get; set; } = new ObservableCollection<T>();
 
         [Parameter]
+        public bool IsReadOnly { get; set; } = false;
+
+        [Parameter]
         public RenderFragment? OtherColumns { get; set; }
 
         [Parameter]

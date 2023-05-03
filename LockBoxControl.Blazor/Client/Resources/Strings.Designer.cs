@@ -70,6 +70,15 @@ namespace LockBoxControl.Blazor.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Arduino&apos;s Name.
+        /// </summary>
+        public static string ArduinoName {
+            get {
+                return ResourceManager.GetString("ArduinoName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -84,6 +93,33 @@ namespace LockBoxControl.Blazor.Client.Resources {
         public static string CommandLetter {
             get {
                 return ResourceManager.GetString("CommandLetter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command Name.
+        /// </summary>
+        public static string CommandName {
+            get {
+                return ResourceManager.GetString("CommandName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string Completed {
+            get {
+                return ResourceManager.GetString("Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Request Completed On.
+        /// </summary>
+        public static string CompletedOn {
+            get {
+                return ResourceManager.GetString("CompletedOn", resourceCulture);
             }
         }
         
@@ -178,11 +214,29 @@ namespace LockBoxControl.Blazor.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requested On.
+        /// </summary>
+        public static string RequestedOn {
+            get {
+                return ResourceManager.GetString("RequestedOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset Form.
         /// </summary>
         public static string ResetForm {
             get {
                 return ResourceManager.GetString("ResetForm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Succes.
+        /// </summary>
+        public static string Success {
+            get {
+                return ResourceManager.GetString("Success", resourceCulture);
             }
         }
         

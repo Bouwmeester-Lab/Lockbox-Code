@@ -1,0 +1,21 @@
+﻿@page "/requests"
+@using LockBoxControl.Blazor.Client.Pages.Base;
+@using LockBoxControl.Core.Models;
+
+@inherits EditEntity<Request, Guid>
+
+<h3>Requests Main Page</h3>
+<MudPaper Elevation="25">
+    <EntityMainPage T="Request" TId="Guid" Entity="Entity" IsReadOnly=true>
+        <OtherColumns>
+            
+            <PropertyColumn Property="x => x.Command.Name" Title="@Resources.Strings.CommandName" IsEditable=false />
+            <PropertyColumn Property="x => x.Arduino.Name" Title="@Resources.Strings.ArduinoName" IsEditable=false />
+            <PropertyColumn Property="x => x.IsSuccess" Title="@Resources.Strings.Success" />
+            <PropertyColumn Property="x => x.IsCompleted" Title="@Resources.Strings.Completed" />
+            <PropertyColumn Property="x => x.CompletedDateTime" Title="@Resources.Strings.CompletedOn" />
+            <PropertyColumn Property="x => x.RequestDateTime" Title="@Resources.Strings.RequestedOn" />
+            
+        </OtherColumns>
+    </EntityMainPage>
+</MudPaper>

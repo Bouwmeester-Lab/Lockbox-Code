@@ -28,5 +28,14 @@ namespace LockBoxControl.Storage.Models.Contexts
         public DbSet<Arduino> Arduinos => Set<Arduino>();
         public DbSet<Request> Requests => Set<Request>();
         public DbSet<ArduinoStatus> ArduinoStatuses => Set<ArduinoStatus>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Request>().Navigation(x => x.Arduino).AutoInclude();
+
+            modelBuilder.Entity<Request>().Navigation(x => x.Command).AutoInclude();
+        }
     }
 }
