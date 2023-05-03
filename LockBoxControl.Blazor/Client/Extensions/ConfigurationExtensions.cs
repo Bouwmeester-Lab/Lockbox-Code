@@ -2,6 +2,7 @@
 using LockBoxControl.Core.Frontend.Contracts;
 using LockBoxControl.Core.Frontend.Services;
 using LockBoxControl.Core.Models;
+using System.Security.Cryptography;
 
 namespace LockBoxControl.Blazor.Client.Extensions
 {
@@ -38,6 +39,16 @@ namespace LockBoxControl.Blazor.Client.Extensions
             where TEntity : IEntity
         {
             services.AddApiClient<TEntity, long>(configuration);
+            return services;
+        }
+
+        public static IServiceCollection AddRunCommandClient(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHttpClient<RunCommandClient>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["BaseApiAddress"]
+                    ?? throw new ArgumentNullException("BaseApiAddress"));
+            });
             return services;
         }
     }

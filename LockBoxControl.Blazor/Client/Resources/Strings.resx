@@ -126,11 +126,20 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="CommandFailedToRunUnknown" xml:space="preserve">
+    <value>Command failed to run. It might have been the HTTP call failed, or the deserialization failed.</value>
+  </data>
   <data name="CommandLetter" xml:space="preserve">
     <value>Command Letter</value>
   </data>
   <data name="CommandName" xml:space="preserve">
     <value>Command Name</value>
+  </data>
+  <data name="CommandSentButLongRunning" xml:space="preserve">
+    <value>Command was sent succesfully to Arduino named {0}, but it is a long running command. When it's finished, you will receive a notification.</value>
+  </data>
+  <data name="CommandSuccess" xml:space="preserve">
+    <value>Command was run succesfully on Arduino named {0}.</value>
   </data>
   <data name="Completed" xml:space="preserve">
     <value>Completed</value>
@@ -164,6 +173,9 @@
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
+  </data>
+  <data name="NoCommandSelected" xml:space="preserve">
+    <value>You must select a command before trying to run a command!</value>
   </data>
   <data name="PortName" xml:space="preserve">
     <value>Port Name</value>

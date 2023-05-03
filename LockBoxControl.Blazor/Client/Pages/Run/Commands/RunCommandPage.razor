@@ -11,13 +11,13 @@
         @Resources.Strings.RunCommandTitlePage
     </MudCardHeader>
     <MudCardContent>
-        <MudSelect T="Command" Label="@Resources.Strings.SelectCommand">
+        <MudSelect T="Command" Label="@Resources.Strings.SelectCommand" @bind-Value=SelectedCommand>
             @foreach (var command in Commands)
             {
                 <MudSelectItem Value="@command" />
             }
         </MudSelect>
-        <MudSelect T=Arduino Label="@Resources.Strings.SelectArduino" MultiSelection=true>
+        <MudSelect T=Arduino Label="@Resources.Strings.SelectArduino" SelectedValues="SelectedArduinos" MultiSelection=true>
             @foreach (var arduino in Arduinos)
             {
                 <MudSelectItem Value="@arduino" />
@@ -27,6 +27,7 @@
     <MudCardActions Class="justify-center">
         <MudButton StartIcon="@Icons.Material.Filled.Send"
                    Variant="Variant.Filled"
+                   @onclick=RunCommandAsync
                    Color="Color.Primary">@Resources.Strings.RunCommand</MudButton>
     </MudCardActions>
 </MudCard>

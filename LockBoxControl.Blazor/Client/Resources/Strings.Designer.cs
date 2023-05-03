@@ -88,6 +88,15 @@ namespace LockBoxControl.Blazor.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command failed to run. It might have been the HTTP call failed, or the deserialization failed..
+        /// </summary>
+        public static string CommandFailedToRunUnknown {
+            get {
+                return ResourceManager.GetString("CommandFailedToRunUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Command Letter.
         /// </summary>
         public static string CommandLetter {
@@ -102,6 +111,24 @@ namespace LockBoxControl.Blazor.Client.Resources {
         public static string CommandName {
             get {
                 return ResourceManager.GetString("CommandName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command was sent succesfully to Arduino named {0}, but it is a long running command. When it&apos;s finished, you will receive a notification..
+        /// </summary>
+        public static string CommandSentButLongRunning {
+            get {
+                return ResourceManager.GetString("CommandSentButLongRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command was run succesfully on Arduino named {0}..
+        /// </summary>
+        public static string CommandSuccess {
+            get {
+                return ResourceManager.GetString("CommandSuccess", resourceCulture);
             }
         }
         
@@ -201,6 +228,15 @@ namespace LockBoxControl.Blazor.Client.Resources {
         public static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must select a command before trying to run a command!.
+        /// </summary>
+        public static string NoCommandSelected {
+            get {
+                return ResourceManager.GetString("NoCommandSelected", resourceCulture);
             }
         }
         

@@ -19,6 +19,7 @@ builder.Services.AddApiClient<Arduino>(builder.Configuration);
 builder.Services.AddApiClient<Command>(builder.Configuration);
 builder.Services.AddApiClient<ArduinoStatus, Guid, ArduinoStatusesClient>(builder.Configuration);
 builder.Services.AddApiClient<Request, Guid>(builder.Configuration);
+builder.Services.AddRunCommandClient(builder.Configuration);
 
 
 builder.Services.AddMudServices();
