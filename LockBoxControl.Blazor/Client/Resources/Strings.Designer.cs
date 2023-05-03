@@ -232,6 +232,24 @@ namespace LockBoxControl.Blazor.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string Status {
+            get {
+                return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updated On.
+        /// </summary>
+        public static string StatusUpdatedOn {
+            get {
+                return ResourceManager.GetString("StatusUpdatedOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Succes.
         /// </summary>
         public static string Success {

@@ -20,6 +20,20 @@ namespace LockBoxControl.Blazor.Client.Extensions
             return services;
         }
 
+        public static IServiceCollection AddApiClient<TEntity, TId, TImplementation>(this IServiceCollection services, IConfiguration configuration)
+            where TEntity : IEntity<TId>
+            where TId : IEquatable<TId>
+            where TImplementation : class, ICrudClient<TEntity, TId>
+        {
+            services.AddHttpClient<ICrudClient<TEntity, TId>, TImplementation>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["BaseApiAddress"]
+                    ?? throw new ArgumentNullException("BaseApiAddress"));
+            });
+
+            return services;
+        }
+
         public static IServiceCollection AddApiClient<TEntity>(this IServiceCollection services, IConfiguration configuration)
             where TEntity : IEntity
         {

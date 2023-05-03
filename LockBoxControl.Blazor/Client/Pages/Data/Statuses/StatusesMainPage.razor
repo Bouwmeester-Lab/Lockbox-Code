@@ -1,0 +1,18 @@
+﻿@page "/statuses"
+@using LockBoxControl.Blazor.Client.Pages.Base;
+@using LockBoxControl.Core.Models;
+
+@inherits EditEntity<ArduinoStatus, Guid>
+
+<h3>Statuses</h3>
+<MudPaper Elevation="25">
+    <EntityMainPage T="ArduinoStatus" TId="Guid" Entity="Entity" IsReadOnly=true>
+        <OtherColumns>
+
+            <PropertyColumn Property="x => x.Status" Title="@Resources.Strings.Status" IsEditable=false />
+            <PropertyColumn Property="x => x.Arduino.Name" Title="@Resources.Strings.ArduinoName" IsEditable=false />
+            <PropertyColumn Property="x => x.StatusDateTime" Title="@Resources.Strings.StatusUpdatedOn" />
+
+        </OtherColumns>
+    </EntityMainPage>
+</MudPaper>

@@ -36,6 +36,8 @@ namespace LockBoxControl.Storage.Models.Contexts
             modelBuilder.Entity<Request>().Navigation(x => x.Arduino).AutoInclude();
 
             modelBuilder.Entity<Request>().Navigation(x => x.Command).AutoInclude();
+
+            modelBuilder.Entity<ArduinoStatus>().Navigation(x => x.Arduino).AutoInclude();
         }
     }
 }
