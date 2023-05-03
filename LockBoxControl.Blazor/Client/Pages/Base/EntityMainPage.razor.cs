@@ -9,6 +9,11 @@ namespace LockBoxControl.Blazor.Client.Pages.Base
     [CascadingTypeParameter(nameof(T))]
     public partial class EntityMainPage<T, TId>
     {
+        public EntityMainPage() : base()
+        {
+            SubmitAction = Core.Frontend.Models.SubmitActions.Update;
+        }
+
         protected ObservableCollection<T> Items { get; set; } = new ObservableCollection<T>();
 
         [Parameter]
