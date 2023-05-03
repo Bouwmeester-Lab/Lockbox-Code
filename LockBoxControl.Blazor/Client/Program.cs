@@ -1,5 +1,7 @@
 using LockBoxControl.Blazor.Client;
+using LockBoxControl.Blazor.Client.Contracts;
 using LockBoxControl.Blazor.Client.Extensions;
+using LockBoxControl.Blazor.Client.Services;
 using LockBoxControl.Core.Frontend.Contracts;
 using LockBoxControl.Core.Frontend.Services;
 using LockBoxControl.Core.Models;
@@ -11,7 +13,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-
+builder.Services.AddScoped<IThemeService, ThemeService>();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 

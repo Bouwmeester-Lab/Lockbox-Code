@@ -88,6 +88,24 @@ namespace LockBoxControl.Blazor.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change to Light Mode.
+        /// </summary>
+        public static string ChangeThemeDarkToLightText {
+            get {
+                return ResourceManager.GetString("ChangeThemeDarkToLightText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change to Dark Mode.
+        /// </summary>
+        public static string ChangeThemeLightToDarkText {
+            get {
+                return ResourceManager.GetString("ChangeThemeLightToDarkText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Command failed to run. It might have been the HTTP call failed, or the deserialization failed..
         /// </summary>
         public static string CommandFailedToRunUnknown {

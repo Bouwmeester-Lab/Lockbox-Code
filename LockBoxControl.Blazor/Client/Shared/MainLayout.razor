@@ -1,6 +1,10 @@
-﻿@inherits LayoutComponentBase
+﻿@using LockBoxControl.Blazor.Client.Contracts;
+@using LockBoxControl.Blazor.Client.Services;
+@inherits LayoutComponentBase
 
-<MudThemeProvider />
+@inject IThemeService ThemeService
+
+<MudThemeProvider @bind-IsDarkMode="@IsDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -9,7 +13,8 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
         <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Bouwmeester-Lab/Lockbox-Code" Target="_blank" />
+        <ThemeSelector @bind-IsDarkMode=@IsDarkMode />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
@@ -30,5 +35,22 @@
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    bool IsDarkMode { get; set; } = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var theme = await ThemeService.GetCurrentThemeAsync();
+            IsDarkMode = theme switch
+            {
+                Theme.Dark => true,
+                _ => false,
+            };
+            StateHasChanged();
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 }

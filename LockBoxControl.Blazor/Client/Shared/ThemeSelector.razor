@@ -1,0 +1,46 @@
+﻿@using LockBoxControl.Blazor.Client.Contracts;
+@using LockBoxControl.Blazor.Client.Resources;
+@using LockBoxControl.Blazor.Client.Services;
+
+<link href="_content/Radzen.Blazor/css/@(IsDarkMode ? "dark" : "default")-base.css" rel="stylesheet" />
+
+<MudStack Row=true Justify="Justify.Center">
+    <MudTooltip Class="@Class" Text="@TooltipText">
+    <MudToggleIconButton Class="@Class" 
+                        Toggled="@IsDarkMode"
+                     ToggledChanged="@OnToggledChanged"    
+                     Icon="@Icons.Material.Filled.DarkMode" Color="@Color.Inherit" 
+                     ToggledIcon="@Icons.Material.Filled.LightMode" ToggledColor="@Color.Inherit" />
+</MudTooltip>
+
+</MudStack>
+
+
+@code {
+    [Parameter]
+    public string Class { get; set; } = "";
+
+    [Parameter]
+    public bool IsDarkMode { get; set; }
+    [Parameter]
+    public EventCallback<bool> IsDarkModeChanged { get; set; }
+    [Inject] private IThemeService? ThemeService { get; set; }
+    string TooltipText => IsDarkMode switch
+    {
+        true => @Strings.ChangeThemeLightToDarkText,
+        false => @Strings.ChangeThemeDarkToLightText
+    };
+
+    async Task OnToggledChanged(bool newValue)
+    {
+        IsDarkMode = newValue;
+
+        ThemeService?.SetCurrentThemeAsync(newValue switch
+        {
+            true => Theme.Dark,
+            false => Theme.Light,
+        });
+
+        await IsDarkModeChanged.InvokeAsync(newValue).ConfigureAwait(false);
+    }
+}

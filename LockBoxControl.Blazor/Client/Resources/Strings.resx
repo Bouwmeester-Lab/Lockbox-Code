@@ -126,6 +126,12 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="ChangeThemeDarkToLightText" xml:space="preserve">
+    <value>Change to Light Mode</value>
+  </data>
+  <data name="ChangeThemeLightToDarkText" xml:space="preserve">
+    <value>Change to Dark Mode</value>
+  </data>
   <data name="CommandFailedToRunUnknown" xml:space="preserve">
     <value>Command failed to run. It might have been the HTTP call failed, or the deserialization failed.</value>
   </data>
