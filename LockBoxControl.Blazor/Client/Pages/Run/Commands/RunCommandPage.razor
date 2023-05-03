@@ -1,0 +1,39 @@
+﻿@using LockBoxControl.Core.Models;
+
+@page "/run/command"
+
+<PageTitle>
+    @Resources.Strings.RunCommandTitlePage
+</PageTitle>
+
+<MudCard>
+    <MudCardHeader>
+        @Resources.Strings.RunCommandTitlePage
+    </MudCardHeader>
+    <MudCardContent>
+        <MudSelect T="Command" Label="@Resources.Strings.SelectCommand">
+            @foreach (var command in Commands)
+            {
+                <MudSelectItem Value="@command" />
+            }
+        </MudSelect>
+        <MudSelect T=Arduino Label="@Resources.Strings.SelectArduino" MultiSelection=true>
+            @foreach (var arduino in Arduinos)
+            {
+                <MudSelectItem Value="@arduino" />
+            }
+        </MudSelect>
+    </MudCardContent>
+    <MudCardActions Class="justify-center">
+        <MudButton StartIcon="@Icons.Material.Filled.Send"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">@Resources.Strings.RunCommand</MudButton>
+    </MudCardActions>
+</MudCard>
+
+
+
+
+@code {
+
+}

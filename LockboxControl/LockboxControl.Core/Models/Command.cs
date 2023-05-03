@@ -28,4 +28,9 @@ public class Command : IEntity
         Name = "Mac Address",
         Id = 0,
     };
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

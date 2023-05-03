@@ -26,5 +26,10 @@ namespace LockBoxControl.Core.Models
 
         [MaxLength(17)]
         public string? MacAddress { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

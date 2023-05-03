@@ -232,6 +232,42 @@ namespace LockBoxControl.Blazor.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Run Command.
+        /// </summary>
+        public static string RunCommand {
+            get {
+                return ResourceManager.GetString("RunCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run Commands.
+        /// </summary>
+        public static string RunCommandTitlePage {
+            get {
+                return ResourceManager.GetString("RunCommandTitlePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Arduinos (optional).
+        /// </summary>
+        public static string SelectArduino {
+            get {
+                return ResourceManager.GetString("SelectArduino", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a Command.
+        /// </summary>
+        public static string SelectCommand {
+            get {
+                return ResourceManager.GetString("SelectCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Status.
         /// </summary>
         public static string Status {
