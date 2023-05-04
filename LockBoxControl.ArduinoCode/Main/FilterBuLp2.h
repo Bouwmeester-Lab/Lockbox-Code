@@ -1,3 +1,6 @@
+#ifndef FilterBuLp2_H
+#define FilterBuLp2_H
+
 //Low pass butterworth filter order=2 alpha1=0.0003 ==> 15Hz
 class  FilterBuLp2
 {
@@ -22,3 +25,5 @@ class  FilterBuLp2
          (v[0] + v[2]) + 2 * v[1];
     }
 };
+
+#endif

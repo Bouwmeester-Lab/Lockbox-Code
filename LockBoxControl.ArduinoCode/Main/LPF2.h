@@ -1,3 +1,6 @@
+#ifndef LPF2_H
+#define LPF2_H
+
 //Low pass filter, order=2 alpha1=0.0003 ==> 15Hz
 class  LPF2
 {
@@ -29,3 +32,5 @@ class  LPF2
       return v[1];
     }
 };
+
+#endif

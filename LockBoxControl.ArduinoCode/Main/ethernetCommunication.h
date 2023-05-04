@@ -1,3 +1,6 @@
+#ifndef ethernetCommunication_H
+#define ethernetCommunication_H
+
 #include <NativeEthernet.h>
 
 /// Gets the mac from the teensy
@@ -86,3 +89,5 @@ void registerMacWithServer(EthernetClient& client, const IPAddress& server, cons
   }
 
 }
+
+#endif

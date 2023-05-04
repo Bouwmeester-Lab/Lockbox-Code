@@ -7,6 +7,8 @@
 #include "ad5791.h"
 #include "FilterBuLp2.h"
 #include "ethernetCommunication.h"
+#include "SerialCommand.h"
+#include "dac.h"
 
 // preprocessor definitions
 #define Tsample 30 //sample time for timer in microseconds
@@ -15,20 +17,22 @@
 // constants
 
 // pin definitions
-const uint8_t reset1 = A0;
-const uint8_t clr1   = A1;
-const uint8_t ldac1  = A2;
-const uint8_t sync1  = A3;
+DAC dac1(A0, A1, A2, A3);
+DAC dac2(A4, A5, A6, A7);
+// const uint8_t reset1 = A0;
+// const uint8_t clr1   = A1;
+// const uint8_t ldac1  = A2;
+// const uint8_t sync1  = A3;
 
-const uint8_t reset2 = A4;
-const uint8_t clr2   = A5;
-const uint8_t ldac2  = A6;
-const uint8_t sync2  = A7;
+// const uint8_t reset2 = A4;
+// const uint8_t clr2   = A5;
+// const uint8_t ldac2  = A6;
+// const uint8_t sync2  = A7;
 
-uint8_t reset = reset1;
-uint8_t clr   = clr1;
-uint8_t ldac  = ldac1;
-uint8_t sync  = sync1;
+// uint8_t reset = reset1;
+// uint8_t clr   = clr1;
+// uint8_t ldac  = ldac1;
+// uint8_t sync  = sync1;
 
 // constants frequencies
 
@@ -86,6 +90,9 @@ const int max_bits=524288-1;
 
 double volt_limit_down = 1000;
 double volt_limit_up = 500000;
+
+
+
 unsigned long DAC2_offset = 250000;//find the proper voltage by delta source, why was this a float?????
 const double abs_volt_limit_up = 500000; // limits to protect piezo
 const double abs_volt_limit_down = 100;
@@ -127,21 +134,21 @@ void setup()
   Serial.begin(38400);
   SPI.begin();
 
-  setUpDacPins(reset1, clr1, ldac1, sync1);
-  setUpDacPins(reset2, clr2, ldac2, sync2);
+  dac1.setUpDacPins();
+  dac2.setUpDacPins();
   
   SPI.beginTransaction(SPISettings(3800000, MSBFIRST, SPI_MODE1));
      
-  AD5791_GetRegisterValue(sync1, AD5791_REG_CTRL);  // we get the ctrl register value from the first dac.
-  unsigned long status = AD5791_GetRegisterValue(sync1, AD5791_REG_CTRL); // we get it again. Is it different? no idea.
+  dac1.getCtrlValue();  // we get the ctrl register value from the first dac.
+  unsigned long status = dac1.getCtrlValue(); // we get it again. Is it different? no idea.
 
   status = status & ~(AD5791_CTRL_LINCOMP(-1) | AD5791_CTRL_SDODIS | AD5791_CTRL_BIN2SC | AD5791_CTRL_RBUF | AD5791_CTRL_OPGND);
- 
-  initializeDac(sync1, status); // aren't we undoing what we did here in the next line??
   
-  initializeDac(sync1, oldCtrl_c); // operation on dac1
+  dac1.initializeDac(status); // aren't we undoing what we did here in the next line??
+  
+  dac1.initializeDac(oldCtrl_c); // operation on dac1
 
-  initializeDac(sync2, oldCtrl_c); // on dac2
+  dac2.initializeDac(oldCtrl_c); // on dac2
 
   //---------------------------------------
   analogReadResolution(12); // 1 point corresponds to 3.3V/2^(12) 
@@ -164,12 +171,12 @@ void setup()
     }
 
   //switch to DAC2 and initialize, the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
-  initializeDac(sync2, oldCtrl_c); // we initialize again, why? no idea, it's just what the code has...
-  setOffsetDac(sync2, DAC2_offset); // DC offset for DAC2     
+  dac2.initializeDac(oldCtrl_c); // we initialize again, why? no idea, it's just what the code has...
+  dac2.setOutputVoltage(DAC2_offset); // DC offset for DAC2     
 
   // initialize DAC1  the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
   volt_start=250000;//scan from 5V
-  initializeDac(sync1, oldCtrl_c);
+  dac1.initializeDac(oldCtrl_c); // again???
   
   Serial.println("initialized");
   delay(1000);
@@ -220,13 +227,39 @@ float refladd = 0;
 int reflindex = 0;
 float reflmean = 0;
 
+SerialCommand command;
+
 void loop() 
 { 
   if (Serial.available())
   {
+    auto c = Serial.readStringUntil('\n');
+
+    command = SerialCommand::serialize(c);
+
+    if(command.isOk){
+      switch(command.commandLetter){
+        case 's':
+          TurnOnLed(command.requestId);
+          break;
+        case 'l':
+          TurnOffLed(command.requestId);
+          break;
+        case 'm':
+          getMacAddress(command.requestId);
+          break;
+        default:
+          SendError("unkown command");
+          break;
+      }
+    }
+    else{
+      SendError(command.errorMessage);
+    }
     incomingByte = Serial.read();  // will not be -1
     //Serial.println(incomingByte);   //  l=108; s=115;  z=122
   }
+
   if (flag)
   {
     flag = false;
@@ -368,45 +401,31 @@ void loop()
              
   
       if(engage == 1)   //feedback on
-          {
-            time_index = time_index + 1;          
-  //              if (state_flag == 0)    //switch pid off  state_flag==0
-  //              {
-  //                  if (freeze && time_index > pid_on_loops)
-  //                  {
-  //                    flag_monitor = 1000;
-  //                    state_flag = 1; 
-  //                    time_index = 0;          
-  //                  }
-  //              }
-            if(state_flag == 0)//PID
-            {       
-              errorsum = errorsum + (error - setpoint)/100000;//Scaling the integral
-              if (I*errorsum > 400000) //Checking if integral feedback is not too large
-                errorsum = 400000/I;
-              if (I*errorsum < -400000)
-                errorsum = -400000;
-              C =P*(error - setpoint) + I*errorsum + D*(error - olderror); //all you have to do is replace this with NN output    
-              olderror = error;
-            }        
-          }
-
-        volt_out_DAC1 = last_resonance_volt + C + sinetable[0][r];
+      {
+        time_index = time_index + 1;          
+          //              if (state_flag == 0)    //switch pid off  state_flag==0
+          //              {
+          //                  if (freeze && time_index > pid_on_loops)
+          //                  {
+          //                    flag_monitor = 1000;
+          //                    state_flag = 1; 
+          //                    time_index = 0;          
+          //                  }
+          //              }
+        if(state_flag == 0)//PID
+        {       
+          errorsum = errorsum + (error - setpoint)/100000;//Scaling the integral
+          if (I*errorsum > 400000) //Checking if integral feedback is not too large
+            errorsum = 400000/I;
+          if (I*errorsum < -400000)
+            errorsum = -400000;
+          C =P*(error - setpoint) + I*errorsum + D*(error - olderror); //all you have to do is replace this with NN output    
+          olderror = error;
+        }        
+      }
+      volt_out_DAC1 = last_resonance_volt + C + sinetable[0][r];
     }
 
     AD5791_SetRegisterValue(sync, AD5791_REG_DAC, volt_out_DAC1);
- 
-    print_index++;              
-    if (print_index == 300)
-    {      
-      Serial.print(volt_out_DAC1/100);   
-      Serial.print(",");
-      Serial.print(C);  
-      Serial.print(",");
-      Serial.print(Refl); 
-      Serial.print(",");   
-      Serial.println(error*10);    
-      print_index = 0;
-    }
   }
 }
