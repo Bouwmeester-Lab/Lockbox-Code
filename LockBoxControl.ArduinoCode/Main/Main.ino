@@ -124,14 +124,9 @@ void setup()
   pinMode(A8, INPUT);
   Serial.begin(38400);
   SPI.begin();
-  pinMode(reset1, OUTPUT);
-  pinMode(clr1  , OUTPUT);
-  pinMode(ldac1 , OUTPUT);
-  pinMode(sync1 , OUTPUT);
-  pinMode(reset2, OUTPUT);
-  pinMode(clr2  , OUTPUT);
-  pinMode(ldac2 , OUTPUT);
-  pinMode(sync2 , OUTPUT);
+
+  setUpDacPins(reset1, clr1, ldac1, sync1);
+  setUpDacPins(reset2, clr2, ldac2, sync2);
 
   digitalWrite(ldac1,LOW);
   digitalWrite(reset1,HIGH);

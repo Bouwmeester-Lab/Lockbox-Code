@@ -95,3 +95,10 @@ long AD5791_GetRegisterValue(uint8_t syncPort, unsigned char registerAddress) {
              ((long)registerWord[2] << 0);
   return dataRead;
 }
+
+void setUpDacPins(uint8_t reset, uint8_t clear, uint8_t ldac, uint8_t sync){
+  pinMode(reset, OUTPUT);
+  pinMode(clear  , OUTPUT);
+  pinMode(ldac , OUTPUT);
+  pinMode(sync , OUTPUT);
+}
