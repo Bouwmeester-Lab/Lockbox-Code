@@ -3,6 +3,7 @@ using LockBoxControl.Blazor.Client.Contracts;
 using LockBoxControl.Blazor.Client.Extensions;
 using LockBoxControl.Blazor.Client.Services;
 using LockBoxControl.Core.Frontend.Contracts;
+using LockBoxControl.Core.Frontend.Extensions;
 using LockBoxControl.Core.Frontend.Services;
 using LockBoxControl.Core.Models;
 using Microsoft.AspNetCore.Components.Web;
@@ -23,6 +24,7 @@ builder.Services.AddApiClient<ArduinoStatus, Guid, ArduinoStatusesClient>(builde
 builder.Services.AddApiClient<Request, Guid>(builder.Configuration);
 builder.Services.AddRunCommandClient(builder.Configuration);
 
+builder.Services.ConfigureHubClient(builder.Configuration);
 
 builder.Services.AddMudServices();
 

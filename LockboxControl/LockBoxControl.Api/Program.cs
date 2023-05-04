@@ -5,6 +5,7 @@ using LockBoxControl.Storage.Models;
 using System.Text.Json.Serialization;
 using LockBoxControl.Core.Models;
 using LockBoxControl.Core.Backend.Services;
+using LockBoxControl.Api.Hubs;
 //using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,6 +62,7 @@ builder.Services.AddControllers()
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -76,6 +78,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<StatusHub>("/Hubs/Status");
 app.UseCors();
 
 // run migrations

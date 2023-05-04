@@ -1,0 +1,37 @@
+﻿
+@if (LatestStatus is not null)
+{
+    @switch (LatestStatus.Status)
+    {
+        case Core.Models.Status.Locked:
+            <MudAlert Severity="Severity.Success">
+                @string.Format(Resources.Strings.LockedStatusFormat, LatestStatus.Arduino.Name, LatestStatus.StatusDateTime.ToLocalTime())
+            </MudAlert>
+            break;
+        case Core.Models.Status.Unlocked:
+            <MudAlert Severity="Severity.Warning">
+                @string.Format(Resources.Strings.UnlockedStatusFormat, LatestStatus.Arduino.Name, LatestStatus.StatusDateTime.ToLocalTime())
+            </MudAlert>
+            break;
+    }
+    
+
+}
+else if (isLoading)
+{
+    <MudAlert Severity="Severity.Info" NoIcon=true>
+        <div class="d-flex gap-1">
+            <MudProgressCircular Color="Color.Primary" Indeterminate=true Size="Size.Small" />
+            <MudText Typo="Typo.body1">@Resources.Strings.Loading</MudText>
+        </div>
+    </MudAlert>
+}
+else
+{
+    <MudAlert Severity="Severity.Warning">
+        @Resources.Strings.NoStatusAlert
+    </MudAlert>
+}
+@code {
+
+}

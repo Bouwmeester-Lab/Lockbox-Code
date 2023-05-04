@@ -232,6 +232,24 @@ namespace LockBoxControl.Blazor.Client.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        public static string Loading {
+            get {
+                return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arduino named {0} reports a lock on {1} Local Time. .
+        /// </summary>
+        public static string LockedStatusFormat {
+            get {
+                return ResourceManager.GetString("LockedStatusFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MAC Address.
         /// </summary>
         public static string MacAddress {
@@ -255,6 +273,15 @@ namespace LockBoxControl.Blazor.Client.Resources {
         public static string NoCommandSelected {
             get {
                 return ResourceManager.GetString("NoCommandSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No status alert received..
+        /// </summary>
+        public static string NoStatusAlert {
+            get {
+                return ResourceManager.GetString("NoStatusAlert", resourceCulture);
             }
         }
         
@@ -363,6 +390,15 @@ namespace LockBoxControl.Blazor.Client.Resources {
         public static string SuccessUpdate {
             get {
                 return ResourceManager.GetString("SuccessUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arduino named {0} reports an unlock status on {1} Local Time..
+        /// </summary>
+        public static string UnlockedStatusFormat {
+            get {
+                return ResourceManager.GetString("UnlockedStatusFormat", resourceCulture);
             }
         }
         
