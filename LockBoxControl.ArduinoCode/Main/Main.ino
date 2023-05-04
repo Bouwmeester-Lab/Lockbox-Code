@@ -193,23 +193,16 @@ void setup()
   
 
 
-   //switch to DAC2 and initialize, the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
-  ldac=ldac2; // useless
-  reset=reset2; // useless
-  clr=clr2; // useless
-  sync=sync2; // useless
+  //switch to DAC2 and initialize, the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
   status = AD5791_SetRegisterValue(sync2, AD5791_REG_CTRL, oldCtrl_c);  
-  AD5791_SetRegisterValue(sync, AD5791_REG_DAC, 1);
-  AD5791_SetRegisterValue(sync, AD5791_REG_DAC, DAC2_offset);//DC offset for DAC2   
+  AD5791_SetRegisterValue(sync2, AD5791_REG_DAC, 1);
+  AD5791_SetRegisterValue(sync2, AD5791_REG_DAC, DAC2_offset);//DC offset for DAC2   
   
   
 
   // initialize DAC1  the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
   volt_start=250000;//scan from 5V
-  ldac=ldac1; // useless
-  reset=reset1; // useless
-  clr=clr1; // useless
-  sync=sync1; // useless
+  
   status = AD5791_SetRegisterValue(sync1, AD5791_REG_CTRL, oldCtrl_c);      
   AD5791_SetRegisterValue(sync1, AD5791_REG_DAC, 1);
 
