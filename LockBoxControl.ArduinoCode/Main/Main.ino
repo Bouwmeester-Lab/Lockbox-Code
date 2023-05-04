@@ -6,6 +6,7 @@
 #include "LPF2.h"
 #include "ad5791.h"
 #include "FilterBuLp2.h"
+#include "ethernetCommunication.h"
 
 // preprocessor definitions
 #define Tsample 30 //sample time for timer in microseconds
@@ -153,7 +154,7 @@ void setup()
   volt_start = AC_ampl_bits;
   Volt = 0;
   dV = 1.0/500.0;       
-  
+
   for (int h=0;h<36;h++) //sinetable is generated
     {
       for (int j =0; j<sinetablesize; j++)
@@ -168,7 +169,7 @@ void setup()
 
   // initialize DAC1  the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
   volt_start=250000;//scan from 5V
-  initializeDac(sync1);
+  initializeDac(sync1, oldCtrl_c);
   
   Serial.println("initialized");
   delay(1000);
