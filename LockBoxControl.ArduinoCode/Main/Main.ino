@@ -31,7 +31,7 @@ uint8_t sync  = sync1;
 
 // constants frequencies
 
-unsigned long oldCtrl_c = 2097152;
+const unsigned long oldCtrl_c = 2097152;
 const float lpf2_freq1 = 100;
 const float lpf2_freq2 = 15;
 
@@ -76,7 +76,7 @@ static int sinetable[36][sinetablesize]={};
 float AC_ampl_bits = 0;
 float dV = 0;
 float Volt=0;
-float volt_start;
+unsigned long volt_start; // why was this a float?????????
 bool flag_dV_reduced = false;
 int monitor_shift = 0;
 
@@ -85,7 +85,7 @@ const int max_bits=524288-1;
 
 double volt_limit_down = 1000;
 double volt_limit_up = 500000;
-float DAC2_offset = 250000;//find the proper voltage by delta source
+unsigned long DAC2_offset = 250000;//find the proper voltage by delta source, why was this a float?????
 const double abs_volt_limit_up = 500000; // limits to protect piezo
 const double abs_volt_limit_down = 100;
 //PDH LPF 1.28kHz
@@ -122,51 +122,30 @@ float Lock_trigger=1600;
 void setup() 
 {
   pinMode(A8, INPUT);
+
   Serial.begin(38400);
   SPI.begin();
 
   setUpDacPins(reset1, clr1, ldac1, sync1);
   setUpDacPins(reset2, clr2, ldac2, sync2);
-
-  digitalWrite(ldac1,LOW);
-  digitalWrite(reset1,HIGH);
-  digitalWrite(clr1,HIGH);
-  digitalWrite(sync1,HIGH);
-  digitalWrite(ldac2,LOW);
-  digitalWrite(reset2,HIGH);
-  digitalWrite(clr2,HIGH);
-  digitalWrite(sync2,HIGH);
   
   SPI.beginTransaction(SPISettings(3800000, MSBFIRST, SPI_MODE1));
      
-  long status = AD5791_GetRegisterValue(sync, AD5791_REG_CTRL);  
-  status = AD5791_GetRegisterValue(sync, AD5791_REG_CTRL);
- 
-  unsigned long oldCtrl = status;
-  oldCtrl = oldCtrl & ~(AD5791_CTRL_LINCOMP(-1) | AD5791_CTRL_SDODIS | AD5791_CTRL_BIN2SC | AD5791_CTRL_RBUF | AD5791_CTRL_OPGND);
- 
-  status = AD5791_SetRegisterValue(sync, AD5791_REG_CTRL, oldCtrl);  
-  status = AD5791_GetRegisterValue(sync, AD5791_REG_CTRL);
-  // long d=1; not used
-  digitalWrite(ldac,LOW);
+  AD5791_GetRegisterValue(sync1, AD5791_REG_CTRL);  // we get the ctrl register value from the first dac.
+  unsigned long status = AD5791_GetRegisterValue(sync1, AD5791_REG_CTRL); // we get it again. Is it different? no idea.
 
-  ldac=ldac1;
-  reset=reset1;
-  clr=clr1;
-  sync=sync1; 
-  status = AD5791_SetRegisterValue(sync, AD5791_REG_CTRL, oldCtrl_c);      
-  AD5791_SetRegisterValue(sync, AD5791_REG_DAC, 1);
+  status = status & ~(AD5791_CTRL_LINCOMP(-1) | AD5791_CTRL_SDODIS | AD5791_CTRL_BIN2SC | AD5791_CTRL_RBUF | AD5791_CTRL_OPGND);
+ 
+  initializeDac(sync1, status); // aren't we undoing what we did here in the next line??
+  
+  initializeDac(sync1, oldCtrl_c); // operation on dac1
 
-  ldac=ldac2;
-  reset=reset2;
-  clr=clr2;
-  sync=sync2; 
-  status = AD5791_SetRegisterValue(sync, AD5791_REG_CTRL, oldCtrl_c);      
-  AD5791_SetRegisterValue(sync, AD5791_REG_DAC, 1);
+  initializeDac(sync2, oldCtrl_c); // on dac2
 
   //---------------------------------------
   analogReadResolution(12); // 1 point corresponds to 3.3V/2^(12) 
   analogReadAveraging(3);
+  
   myTimer.begin(flagpost, Tsample); //reset flag to true every Tsample
   delay(1000);
   
@@ -185,23 +164,13 @@ void setup()
       }
     }
 
-  
-
-
   //switch to DAC2 and initialize, the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
-  status = AD5791_SetRegisterValue(sync2, AD5791_REG_CTRL, oldCtrl_c);  
-  AD5791_SetRegisterValue(sync2, AD5791_REG_DAC, 1);
-  AD5791_SetRegisterValue(sync2, AD5791_REG_DAC, DAC2_offset);//DC offset for DAC2   
-  
-  
+  initializeDac(sync2, oldCtrl_c); // we initialize again, why? no idea, it's just what the code has...
+  setOffsetDac(sync2, DAC2_offset); // DC offset for DAC2     
 
   // initialize DAC1  the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
   volt_start=250000;//scan from 5V
-  
-  status = AD5791_SetRegisterValue(sync1, AD5791_REG_CTRL, oldCtrl_c);      
-  AD5791_SetRegisterValue(sync1, AD5791_REG_DAC, 1);
-
- 
+  initializeDac(sync1);
   
   Serial.println("initialized");
   delay(1000);

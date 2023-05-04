@@ -101,4 +101,18 @@ void setUpDacPins(uint8_t reset, uint8_t clear, uint8_t ldac, uint8_t sync){
   pinMode(clear  , OUTPUT);
   pinMode(ldac , OUTPUT);
   pinMode(sync , OUTPUT);
+
+  digitalWrite(ldac,LOW);
+  digitalWrite(reset,HIGH);
+  digitalWrite(clear,HIGH);
+  digitalWrite(sync,HIGH);
+}
+
+void initializeDac(uint8_t sync, unsigned long registerValue){
+  AD5791_SetRegisterValue(sync, AD5791_REG_CTRL, registerValue);  
+  AD5791_SetRegisterValue(sync, AD5791_REG_DAC, 1);
+}
+
+void setOffsetDac(uint8_t sync, unsigned long offset){
+  AD5791_SetRegisterValue(sync, AD5791_REG_DAC, offset);
 }
