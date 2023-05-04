@@ -153,9 +153,7 @@ void setup()
   volt_start = AC_ampl_bits;
   Volt = 0;
   dV = 1.0/500.0;       
-
-
-
+  
   for (int h=0;h<36;h++) //sinetable is generated
     {
       for (int j =0; j<sinetablesize; j++)
