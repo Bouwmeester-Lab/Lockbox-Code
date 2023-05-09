@@ -56,8 +56,8 @@ public:
 class DAC
 {
 private:
-    unsigned long calculateLineVoltage(unsigned long current_millis, unsigned long target_voltage, unsigned long starting_voltage, unsigned long milliseconds_to_reach_target, unsigned long starting_millis){
-        return (target_voltage - starting_voltage)/milliseconds_to_reach_target*(current_millis - starting_millis) + starting_voltage;
+    long calculateLineVoltage(unsigned long current_millis, long target_voltage, long starting_voltage, unsigned long milliseconds_to_reach_target, unsigned long starting_millis){
+        return (long)((double)(target_voltage - starting_voltage)/milliseconds_to_reach_target*(current_millis - starting_millis) + starting_voltage);
     }
 public:
     uint8_t reset;
@@ -65,7 +65,7 @@ public:
     uint8_t sync;
     uint8_t ldac;
 
-    unsigned long currentVoltage;
+    long currentVoltage;
 
     DACConfiguration configuration = DACConfiguration();
 
@@ -166,25 +166,47 @@ public:
     //zero
     // slew_time is in microseconds
     void zeroDac(unsigned long slew_time = 1000){
-        unsigned long startingTime = millis();
+        unsigned long startingTime = micros();
 
-        unsigned long startingVoltage = currentVoltage;
+        long startingVoltage = currentVoltage;
 
+        long targetVoltage;
 
-        unsigned long targetVoltage = (voltageUpperLimit - voltageLowerLimit)/2;
+        if(configuration.binary){
+            targetVoltage = (voltageUpperLimit - voltageLowerLimit)/2;
+        }
+        else{
+            targetVoltage = 0;
+        }
+         
 
         bool reachedZero = false;
-        unsigned long outputVoltage;
-
+        long outputVoltage = startingVoltage;
+        
+        long previousVoltage = startingVoltage;
 
         while(!reachedZero){
-            outputVoltage = calculateLineVoltage(millis(), targetVoltage, startingVoltage, slew_time, startingTime);
+            previousVoltage = outputVoltage;
+            outputVoltage = calculateLineVoltage(micros(), targetVoltage, startingVoltage, slew_time, startingTime);
+
             setOutputVoltage(outputVoltage);
-            if(abs(outputVoltage - targetVoltage) < 10){
+
+            #ifdef DEBUG
+            Serial.printf("ov: %i \n", outputVoltage);
+            Serial.printf("sz: %i \n", previousVoltage - outputVoltage);
+            #endif
+
+            if(abs(outputVoltage - targetVoltage) < abs(previousVoltage - outputVoltage)){
+                setOutputVoltage(targetVoltage);
+
+                #ifdef DEBUG
+                Serial.println("Reached target value");
+                #endif
                 reachedZero = true;
             }
             // just in case we limit how long this loop can last:
-            if((unsigned long)(millis() - startingTime) > 2*slew_time){
+            if((unsigned long)(micros() - startingTime) > 2*slew_time){
+                setOutputVoltage(targetVoltage);
                 reachedZero = true;
             }
         }
