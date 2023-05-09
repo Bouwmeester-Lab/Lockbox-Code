@@ -260,8 +260,8 @@ void sendStatus(const char* status){
 // the setup function runs once when you press reset or power the board
 void setup() {
   
-  setupEthernet();
-  registerMacWithServer();
+  // setupEthernet();
+  // registerMacWithServer();
   // sendStatus("Locked");
 
   // initialize digital pin LED_BUILTIN as an output.

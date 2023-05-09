@@ -35,8 +35,10 @@ public:
 
 class MacResult : public SerialCommandStatus
 {
+private:
+  uint8_t mac[6] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 public:
-  void AddResult(DynamicJsonDocument& doc, uint8_t mac[])
+  void AddResult(DynamicJsonDocument& doc)
   {
     String macAddress = "";
     for(int i = 0; i < 6; i++)
@@ -69,21 +71,21 @@ void getMacAddress(String requestId){
 //         DAC1_finished = false;
 // }
 
-void zeroDac(double dvolt_DAC1,  unsigned long volt_limit_up, unsigned long volt_limit_down){
-  if (volt_out_DAC1 > (volt_limit_up + volt_limit_down) / 2.0 + abs(dvolt_DAC1))
-        {         
-            dvolt_DAC1 = -abs(dvolt_DAC1);
-            volt_out_DAC1 = volt_out_DAC1 + dvolt_DAC1;
-        }
+// void zeroDac(double dvolt_DAC1,  unsigned long volt_limit_up, unsigned long volt_limit_down){
+//   if (volt_out_DAC1 > (volt_limit_up + volt_limit_down) / 2.0 + abs(dvolt_DAC1))
+//         {         
+//             dvolt_DAC1 = -abs(dvolt_DAC1);
+//             volt_out_DAC1 = volt_out_DAC1 + dvolt_DAC1;
+//         }
         
-        if (volt_out_DAC1 < (volt_limit_up + volt_limit_down) / 2.0 - abs(dvolt_DAC1))
-        {
-            dvolt_DAC1 = abs(dvolt_DAC1);
-            volt_out_DAC1 = volt_out_DAC1 + dvolt_DAC1;
-        }   
-        errorsum = 0;    
-        DAC1_finished = false;
-}
+//         if (volt_out_DAC1 < (volt_limit_up + volt_limit_down) / 2.0 - abs(dvolt_DAC1))
+//         {
+//             dvolt_DAC1 = abs(dvolt_DAC1);
+//             volt_out_DAC1 = volt_out_DAC1 + dvolt_DAC1;
+//         }   
+//         errorsum = 0;    
+//         DAC1_finished = false;
+// }
 
 void SendError(String error){
   SerialCommandStatus status;

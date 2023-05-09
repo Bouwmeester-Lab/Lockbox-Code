@@ -1,14 +1,22 @@
+#define TEENSY4_0 // set the teensy used.
+
 #include <string.h>
 #include <math.h>
 #include <IntervalTimer.h>
+#include <SPI.h>
 
 // custom libraries
 #include "LPF2.h"
 #include "ad5791.h"
 #include "FilterBuLp2.h"
-#include "ethernetCommunication.h"
+
+#ifdef TEENSY4_1
+  #include "ethernetCommunication.h"
+#endif
+
 #include "SerialCommand.h"
 #include "dac.h"
+#include "commands.h"
 
 // preprocessor definitions
 #define Tsample 30 //sample time for timer in microseconds
@@ -131,26 +139,12 @@ void setup()
 {
   pinMode(A8, INPUT);
 
-  Serial.begin(38400);
-  SPI.begin();
+  Serial.begin(38400); // the value inside begin doesn't matter in the teensies.
+  SPI.begin(); // initialize the SPI communicaton
 
   dac1.setUpDacPins();
   dac2.setUpDacPins();
   
-  SPI.beginTransaction(SPISettings(3800000, MSBFIRST, SPI_MODE1));
-     
-  dac1.getCtrlValue();  // we get the ctrl register value from the first dac.
-  unsigned long status = dac1.getCtrlValue(); // we get it again. Is it different? no idea.
-
-  status = status & ~(AD5791_CTRL_LINCOMP(-1) | AD5791_CTRL_SDODIS | AD5791_CTRL_BIN2SC | AD5791_CTRL_RBUF | AD5791_CTRL_OPGND);
-  
-  dac1.initializeDac(status); // aren't we undoing what we did here in the next line??
-  
-  dac1.initializeDac(oldCtrl_c); // operation on dac1
-
-  dac2.initializeDac(oldCtrl_c); // on dac2
-
-  //---------------------------------------
   analogReadResolution(12); // 1 point corresponds to 3.3V/2^(12) 
   analogReadAveraging(3);
   
@@ -171,15 +165,27 @@ void setup()
     }
 
   //switch to DAC2 and initialize, the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
-  dac2.initializeDac(oldCtrl_c); // we initialize again, why? no idea, it's just what the code has...
-  dac2.setOutputVoltage(DAC2_offset); // DC offset for DAC2     
+
+  // dac1.configuration.tristate = false;
+  dac1.configuration.defaultConfiguration();
+  dac1.set2ComplementMode();
+  dac1.initializeDac();
+
+  
+  dac2.configuration.defaultConfiguration();
+  dac2.set2ComplementMode();
+  dac2.initializeDac();
+
+  dac1.setOutputVoltage(500000); // DC offset for DAC2
+  dac2.setOutputVoltage(500000);
+  // dac1.setOutputVoltage(0);     
 
   // initialize DAC1  the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
-  volt_start=250000;//scan from 5V
-  dac1.initializeDac(oldCtrl_c); // again???
+  // volt_start=250000;//scan from 5V
+  // dac1.initializeDac(oldCtrl_c); // again???
   
-  Serial.println("initialized");
-  delay(1000);
+  // Serial.println("initialized");
+  // delay(1000);
 }
 
 int engage = 0; //switch involved in tranfer between scan and feedback
@@ -221,13 +227,23 @@ int n=0;
 float voltoutacc=0;
 float t1=0;
 int volt_out = 0;
-byte incomingByte = 122;
+
+char incomingByte = 122;
 
 float refladd = 0;
 int reflindex = 0;
 float reflmean = 0;
 
 SerialCommand command;
+
+void zeroDac1(String requestId){
+  dac1.setOutputVoltage(dac1.voltageUpperLimit);
+  dac2.setOutputVoltage(dac2.voltageUpperLimit);
+  SerialCommandStatus status;
+  status.isOk = true;
+  status.requestId = requestId;
+  status.sendThroughSerial();
+}
 
 void loop() 
 { 
@@ -239,193 +255,22 @@ void loop()
 
     if(command.isOk){
       switch(command.commandLetter){
-        case 's':
-          TurnOnLed(command.requestId);
-          break;
-        case 'l':
-          TurnOffLed(command.requestId);
-          break;
-        case 'm':
-          getMacAddress(command.requestId);
+        // case 'm':
+        //   getMacAddress(command.requestId);
+        //   break;
+        case 'z':
+          zeroDac1(command.requestId);
           break;
         default:
           SendError("unkown command");
           break;
       }
+      incomingByte = command.commandLetter;
     }
     else{
       SendError(command.errorMessage);
     }
-    incomingByte = Serial.read();  // will not be -1
+    // incomingByte = Serial.read();  // will not be -1
     //Serial.println(incomingByte);   //  l=108; s=115;  z=122
-  }
-
-  if (flag)
-  {
-    flag = false;
-    n++; 
-    if (volt_out_DAC1 == -100)
-      volt_out_DAC1 = volt_limit_down + 1;      
-    Refl = analogRead(A8)*3;
-    error = -lpf2_2.main(sinetable[phi][r]*Refl)/25.0 * 5;   
-    //error = 2 * Refl;//14000-27000  
-    //error = 2 * lpf2_1.main(Refl);//14000-27000  
-
-    r = (r+1) % sinetablesize;
-    
-    AD5791_SetRegisterValue(sync, AD5791_REG_DAC, volt_out_DAC1);
-  
-      
-///////////////////////////////////////////////////////////////
-    if (incomingByte == 122)  //"z" for zero
-    {
-      //Serial.println("z");
-        if (volt_out_DAC1 > (volt_limit_up + volt_limit_down) / 2.0 + abs(dvolt_DAC1))
-        {         
-            dvolt_DAC1 = -abs(dvolt_DAC1);
-            volt_out_DAC1 = volt_out_DAC1 + dvolt_DAC1;
-        }
-        
-        if (volt_out_DAC1 < (volt_limit_up + volt_limit_down) / 2.0 - abs(dvolt_DAC1))
-        {
-            dvolt_DAC1 = abs(dvolt_DAC1);
-            volt_out_DAC1 = volt_out_DAC1 + dvolt_DAC1;
-        }   
-        errorsum = 0;    
-        DAC1_finished = false;
-    }
-///////////////////////////////////////////////////////////////  
-    if (incomingByte == 115)  //"s" for scan
-    {   
-              
-        if(volt_out_DAC1 > volt_limit_up || volt_out_DAC1 < volt_limit_down)        
-           dvolt_DAC1 = -dvolt_DAC1;             
-          
-        volt_out_DAC1 = volt_out_DAC1 + dvolt_DAC1 + sinetable[phi][r];
-        errorsum = 0;
-        DAC1_finished = false;
-    }
-    ///////////////////////////////////////////////////////////////  
-    if (incomingByte == 100)  //"d" for down, decreases DAC2 voltage
-    {
-        float DAC2_step=20000;
-        if(DAC2_offset > DAC2_step)
-        {
-            DAC2_offset = DAC2_offset - DAC2_step;
-            ldac=ldac2;
-            reset=reset2;
-            clr=clr2;
-            sync=sync2; 
-            status = AD5791_SetRegisterValue(sync, AD5791_REG_CTRL, oldCtrl_c);      
-            AD5791_SetRegisterValue(sync, AD5791_REG_DAC, DAC2_offset);
-
-              // initialize DAC1            
-            ldac=ldac1;
-            reset=reset1;
-            clr=clr1;
-            sync=sync1; 
-            status = AD5791_SetRegisterValue(sync, AD5791_REG_CTRL, oldCtrl_c);     
-        }                 
-    }
-    ///////////////////////////////////////////////////////////////  
-    if (incomingByte == 117)  //"u" for up, increases DAC2 voltage
-    {
-        float DAC2_step=20000;
-        if(DAC2_offset < 500000 - DAC2_step)
-        {
-            DAC2_offset = DAC2_offset + DAC2_step;
-            ldac=ldac2;
-            reset=reset2;
-            clr=clr2;
-            sync=sync2; 
-            status = AD5791_SetRegisterValue(sync, AD5791_REG_CTRL, oldCtrl_c);      
-            AD5791_SetRegisterValue(sync, AD5791_REG_DAC, DAC2_offset);
-
-              // initialize DAC1            
-            ldac=ldac1;
-            reset=reset1;
-            clr=clr1;
-            sync=sync1; 
-            status = AD5791_SetRegisterValue(sync, AD5791_REG_CTRL, oldCtrl_c);     
-        }                 
-    }
-///////////////////////////////////////////////////////////////   
-    if (incomingByte == 108 && DAC1_finished == false ) //lock
-    {
-        if(volt_out_DAC1 > volt_limit_up || volt_out_DAC1 < volt_limit_down)        
-           dvolt_DAC1 = -dvolt_DAC1; 
-        volt_out_DAC1 = volt_out_DAC1 + dvolt_DAC1 + sinetable[phi][r];
-  
-     //////////////////once the resonace found, scan a small range/////////////////
-          if (Refl < Lock_trigger)  //last_resonance_volt initialized 0
-          {  
-              Serial.println("resonance found");
-              //DAC1_finished = true;
-              //dvolt_DAC1 = dvolt_DAC1 / 8.0;
-              dvolt_DAC1 = 0.1;
-              last_resonance_volt = volt_out_DAC1;
-              volt_limit_up = last_resonance_volt + 10000;
-              volt_limit_down = last_resonance_volt - 10000;                                                       
-          }
-
-          if (Refl < Lock_trigger/2.0 && abs(error) < 200)  //last_resonance_volt initialized 0
-          {  
-              Serial.println("locking");
-              DAC1_finished = true;
-              //dvolt_DAC1 = dvolt_DAC1 / 8.0;
-              last_resonance_volt = volt_out_DAC1;                                                       
-          }
-    }
-///////////////////////////////////////////////////////////////
-    if (incomingByte == 108 && DAC1_finished == true ) //lock    
-    {      
-      engage = 1;
-      flag = false;
-      scanning_done = true;
-      
-      if (Refl > Refl_max)
-      {
-        DAC1_finished = false; // ?????? this is a bool... DAC1_finished == false is wrong. I guess you meant to make dac1_finished = false
-        volt_limit_up=abs_volt_limit_up;
-        volt_limit_down=abs_volt_limit_down;
-        dvolt_DAC1 = 0.5;
-      }
-      
-      //restrict locking range
-      if (volt_out_DAC1 > abs_volt_limit_up)
-        volt_out_DAC1 = abs_volt_limit_up;
-      if (volt_out_DAC1 < abs_volt_limit_down)
-        volt_out_DAC1 = abs_volt_limit_down;
-      AD5791_SetRegisterValue(sync, AD5791_REG_DAC, volt_out_DAC1);
-  
-             
-  
-      if(engage == 1)   //feedback on
-      {
-        time_index = time_index + 1;          
-          //              if (state_flag == 0)    //switch pid off  state_flag==0
-          //              {
-          //                  if (freeze && time_index > pid_on_loops)
-          //                  {
-          //                    flag_monitor = 1000;
-          //                    state_flag = 1; 
-          //                    time_index = 0;          
-          //                  }
-          //              }
-        if(state_flag == 0)//PID
-        {       
-          errorsum = errorsum + (error - setpoint)/100000;//Scaling the integral
-          if (I*errorsum > 400000) //Checking if integral feedback is not too large
-            errorsum = 400000/I;
-          if (I*errorsum < -400000)
-            errorsum = -400000;
-          C =P*(error - setpoint) + I*errorsum + D*(error - olderror); //all you have to do is replace this with NN output    
-          olderror = error;
-        }        
-      }
-      volt_out_DAC1 = last_resonance_volt + C + sinetable[0][r];
-    }
-
-    AD5791_SetRegisterValue(sync, AD5791_REG_DAC, volt_out_DAC1);
   }
 }
