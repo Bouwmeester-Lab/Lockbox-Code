@@ -176,8 +176,8 @@ void setup()
   dac2.set2ComplementMode();
   dac2.initializeDac();
 
-  dac1.setOutputVoltage(500000); // DC offset for DAC2
-  dac2.setOutputVoltage(500000);
+  // dac1.setOutputVoltage(500000); // DC offset for DAC2
+  // dac2.setOutputVoltage(500000);
   // dac1.setOutputVoltage(0);     
 
   // initialize DAC1  the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
@@ -237,8 +237,16 @@ float reflmean = 0;
 SerialCommand command;
 
 void zeroDac1(String requestId){
-  dac1.setOutputVoltage(dac1.voltageUpperLimit);
-  dac2.setOutputVoltage(dac2.voltageUpperLimit);
+  dac1.setOutputVoltage(dac1.voltageLowerLimit);
+  dac2.setOutputVoltage(dac2.voltageLowerLimit);
+
+  dac1.zeroDac(400);
+  dac2.zeroDac(100);
+
+  delay(1);
+  dac1.setOutputVoltage(dac1.voltageLowerLimit);
+  dac2.setOutputVoltage(dac2.voltageLowerLimit);
+
   SerialCommandStatus status;
   status.isOk = true;
   status.requestId = requestId;
