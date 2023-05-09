@@ -52,21 +52,45 @@ AD5791_type act_device;
 #define AD5791_OUT_NORMAL 0x0
 #define AD5791_OUT_CLAMPED_6K 0x1
 #define AD5791_OUT_TRISTATE 0x2
- 
-long AD5791_SetRegisterValue(uint8_t syncPort, unsigned char registerAddress, unsigned long registerValue) {
-  unsigned char writeCommand[3] = {0, 0, 0};
+
+
+
+
+const auto ad5791_settings = SPISettings(3000, MSBFIRST, SPI_MODE2);
+
+long AD5791_SetRegisterValue(uint8_t syncPort, unsigned char registerAddress, long registerValue) {
+  byte writeCommand[3] = {0, 0, 0};
   unsigned long spiWord = 0;
   // char status = 0; not used
   spiWord = AD5791_WRITE | AD5791_ADDR_REG(registerAddress) | (registerValue & 0xFFFFF);
-  writeCommand[0] = (spiWord >> 16) & 0x0000FF;
-  writeCommand[1] = (spiWord >> 8 ) & 0x0000FF;
-  writeCommand[2] = (spiWord >> 0 ) & 0x0000FF;
-   
-  digitalWrite(syncPort,LOW);
-  SPI.transfer(writeCommand[0]);
-  SPI.transfer(writeCommand[1]);
-  SPI.transfer(writeCommand[2]);
-  digitalWrite(syncPort,HIGH);
+
+  #ifdef DEBUG
+  Serial.println("sending registry value to register");
+  Serial.println(registerAddress);
+  Serial.println((unsigned long)spiWord, BIN);
+  #endif
+
+  writeCommand[0] = (spiWord >> 16) & 0x0000FF; // transfer sends a byte at a time. so we get the first byte to transfer starting from the left. The byte will be padded with 0 on the left.
+  writeCommand[1] = (spiWord >> 8 ) & 0x0000FF; // second byte to transfer through SPI.
+  writeCommand[2] = (spiWord >> 0 ) & 0x0000FF; // last byte to transfer.
+
+  #ifdef DEBUG
+  Serial.println(writeCommand[0], BIN);
+  Serial.println(writeCommand[1], BIN);  
+  Serial.println(writeCommand[2], BIN);
+  #endif
+
+  SPI.beginTransaction(ad5791_settings); // begin the SPI transaction with the settings for the AD5791
+
+  digitalWrite(syncPort,LOW); // select which dac to update.
+
+  SPI.transfer(writeCommand[0]); // send the first byte
+  SPI.transfer(writeCommand[1]); // second byte is sent
+  SPI.transfer(writeCommand[2]); // third byte is sent
+
+  digitalWrite(syncPort,HIGH); // terminate the register update and output the value on the low to high transition.
+
+  SPI.endTransaction(); // end the spi transaction
  
   return 0;
 }
@@ -76,13 +100,17 @@ long AD5791_GetRegisterValue(uint8_t syncPort, unsigned char registerAddress) {
   unsigned long dataRead = 0x0;
   // char status = 0; not used
   registerWord[0] = (AD5791_READ | AD5791_ADDR_REG(registerAddress)) >> 16;
- 
+  
+  SPI.beginTransaction(ad5791_settings);
+
   digitalWrite(syncPort,LOW);
  
   SPI.transfer(registerWord[0]);
   SPI.transfer(registerWord[1]);
   SPI.transfer(registerWord[2]);
   digitalWrite(syncPort,HIGH);
+
+  SPI.endTransaction();
  
  
   registerWord[0] = 0x00;
@@ -98,26 +126,4 @@ long AD5791_GetRegisterValue(uint8_t syncPort, unsigned char registerAddress) {
              ((long)registerWord[2] << 0);
   return dataRead;
 }
-
-void setUpDacPins(uint8_t reset, uint8_t clear, uint8_t ldac, uint8_t sync){
-  pinMode(reset, OUTPUT);
-  pinMode(clear  , OUTPUT);
-  pinMode(ldac , OUTPUT);
-  pinMode(sync , OUTPUT);
-
-  digitalWrite(ldac,LOW);
-  digitalWrite(reset,HIGH);
-  digitalWrite(clear,HIGH);
-  digitalWrite(sync,HIGH);
-}
-
-void initializeDac(uint8_t sync, unsigned long registerValue){
-  AD5791_SetRegisterValue(sync, AD5791_REG_CTRL, registerValue);  
-  AD5791_SetRegisterValue(sync, AD5791_REG_DAC, 1);
-}
-
-void setOffsetDac(uint8_t sync, unsigned long offset){
-  AD5791_SetRegisterValue(sync, AD5791_REG_DAC, offset);
-}
-
 #endif
