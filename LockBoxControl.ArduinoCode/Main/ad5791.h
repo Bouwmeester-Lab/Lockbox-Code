@@ -56,7 +56,7 @@ AD5791_type act_device;
 
 
 
-const auto ad5791_settings = SPISettings(3000, MSBFIRST, SPI_MODE2);
+const auto ad5791_settings = SPISettings(12000000, MSBFIRST, SPI_MODE2);
 
 long AD5791_SetRegisterValue(uint8_t syncPort, unsigned char registerAddress, long registerValue) {
   byte writeCommand[3] = {0, 0, 0};
