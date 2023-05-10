@@ -2,6 +2,7 @@
 #define commands_H
 
 #include <ArduinoJson.h>
+#include "dac.h"
 
 class SerialCommandStatus
 {
@@ -95,5 +96,226 @@ void SendError(String error){
 
   status.sendThroughSerial();
 }
+
+class Command{
+private:
+  
+protected:
+  virtual SerialCommandStatus ExecuteCommand(String requestId);
+public:
+  char commandLetter;
+  Command(char commandLetter){
+    this->commandLetter = commandLetter;
+  }
+  
+
+  virtual void Execute(String requestId){
+    auto status = ExecuteCommand(requestId);
+    status.sendThroughSerial();
+  }
+};
+
+
+
+class UpCommand : public Command
+{
+private:
+  DAC* dac;
+  unsigned long step_size;
+protected:
+  SerialCommandStatus ExecuteCommand(String requestId) override
+  {
+    SerialCommandStatus status;
+    status.isLongRunning = false;
+    status.requestId = requestId;
+    if(dac->up(step_size)){
+      status.isOk = true;
+      
+      return status;
+    }
+    else{
+      dac->setOutputVoltage(dac->getVoltageUpperLimit());
+    }
+    status.isOk = false;
+    status.errorMessage = "Failed to increment the voltage. The voltage might already be higher that allowed.";
+    return status;    
+  }
+public:
+  UpCommand(char commandLetter, DAC* dac, unsigned long step_size) : Command(commandLetter)
+  {
+    this->dac = dac;
+    this->step_size = step_size;
+  }
+};
+
+class DownCommand : public Command
+{
+private:
+  DAC* dac;
+  unsigned long step_size;
+protected:
+  SerialCommandStatus ExecuteCommand(String requestId) override
+  {
+    SerialCommandStatus status;
+    status.isLongRunning = false;
+    status.requestId = requestId;
+    if(dac->down(step_size)){
+      status.isOk = true;
+      
+      return status;
+    }
+    else{
+      dac->setOutputVoltage(dac->getVoltageLowerLimit());
+    }
+    status.isOk = false;
+    status.errorMessage = "Failed to decrease the voltage. The voltage might already be at the lowest that it's allowed.";
+    return status;    
+  }
+public:
+  DownCommand(char commandLetter, DAC* dac, unsigned long step_size) : Command(commandLetter)
+  {
+    this->dac = dac;
+    this->step_size = step_size;
+  }
+};
+
+class ZeroCommand : public Command
+{
+private:
+  long slew_time = 100;
+  DAC* dac1;
+  DAC* dac2;
+protected:
+  SerialCommandStatus ExecuteCommand(String requestId) override
+  {
+    dac1->zeroDac(slew_time);
+    dac2->zeroDac(slew_time);
+
+    SerialCommandStatus status;
+    status.isLongRunning = false;
+    status.requestId = requestId;
+    status.isOk = true;
+    return status;    
+  }
+public:
+  ZeroCommand(char commandLetter, DAC* dac1, DAC* dac2, long slew_time = 100) : Command(commandLetter)
+  {
+    this->dac1 = dac1;
+    this->dac2 = dac2;
+    this->slew_time = slew_time;
+  }
+};
+
+class Scan
+{
+private:
+  DAC& dac;
+  long slope_time = 1000; // in microseconds
+
+  long lowerScanLimit;
+  long upperScanLimit;
+
+  long startingVoltage = 0;
+  unsigned long startingTime = 0;
+
+  long previousVoltage = 0;
+
+  bool negativeSlope = true;
+public:
+  Scan(DAC& dac, long slope_time = 1000) : dac(dac)
+  {
+    this->slope_time = slope_time;
+
+    this->lowerScanLimit = dac.getVoltageLowerLimit();
+    
+
+    this->upperScanLimit = dac.getVoltageUpperLimit();
+  }
+
+  void setSlopeTime(long slope_time){
+    this->slope_time = slope_time;
+  }
+
+  void setLowerScanLimit(long limit){
+    lowerScanLimit = limit;
+  }
+
+  void setLowerScanLimit(){
+    lowerScanLimit = dac.getVoltageLowerLimit();
+  }
+
+  void setUpperScanLimit(long limit){
+    upperScanLimit = limit;
+  }
+
+  void setUpperScanLimit(){
+    upperScanLimit = dac.getVoltageUpperLimit();
+  }
+
+  void initializeScan(){
+    startingVoltage = dac.getCurrentVoltage();
+
+    #ifdef DEBUG
+    Serial.println(lowerScanLimit);
+    Serial.println(dac.getVoltageLowerLimit());
+    #endif
+    startingTime = micros();
+  }
+
+  
+
+  void setScanVoltage(){
+    // get the current time
+    unsigned long currentTime = micros();
+    long targetVoltage;
+
+    if(negativeSlope){
+      targetVoltage = lowerScanLimit;
+    }
+    else{
+      targetVoltage = upperScanLimit;
+    }
+
+    previousVoltage = dac.getCurrentVoltage();
+    long outputVoltage = Utilities::calculateLineVoltage(currentTime, targetVoltage, startingVoltage, slope_time, startingTime);
+
+    if(abs(outputVoltage - targetVoltage) < abs(previousVoltage - outputVoltage)){
+      // reached the bottom of the scan
+      negativeSlope = !negativeSlope; // invert the slope
+      dac.setOutputVoltage(targetVoltage);
+      //reset the scan
+      initializeScan();
+      return;
+    }
+    #ifdef DEBUG
+    Serial.printf("Target voltage: %i, Output Voltage: %i, Starting Time: %i, Current Time: %i\n", targetVoltage, outputVoltage, startingTime, currentTime);
+    #endif
+    dac.setOutputVoltage(outputVoltage);
+
+  }
+
+};
+
+class ScanCommand : public Command
+{
+private:
+  
+protected:
+  SerialCommandStatus ExecuteCommand(String requestId) override
+  {
+    SerialCommandStatus status;
+    status.isLongRunning = false;
+    status.requestId = requestId;
+    status.isOk = true;
+
+    scan.initializeScan();
+    return status;    
+  }
+public:
+  Scan& scan;
+  ScanCommand(char commandLetter, Scan& scan) : Command(commandLetter), scan(scan)
+  {
+  }
+};
 
 #endif

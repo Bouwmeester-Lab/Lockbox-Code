@@ -134,6 +134,13 @@ float Lock_trigger=1600;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// commands
+UpCommand upCommand('u', &dac2, 20000);
+DownCommand downCommand('d', &dac2, 20000);
+ZeroCommand zeroCommand('z', &dac1, &dac2, 100);
+
+Scan scan_dac_1(dac1);
+ScanCommand scanCommand('s', scan_dac_1);
 
 void setup() 
 {
@@ -150,6 +157,8 @@ void setup()
   
   myTimer.begin(flagpost, Tsample); //reset flag to true every Tsample
   delay(1000);
+
+  
   
   AC_ampl_bits = max_bits*ampl/5;
   volt_start = AC_ampl_bits;
@@ -176,17 +185,9 @@ void setup()
   dac2.set2ComplementMode();
   dac2.initializeDac();
 
-  // dac1.setOutputVoltage(500000); // DC offset for DAC2
-  // dac2.setOutputVoltage(500000);
-  // dac1.setOutputVoltage(0);     
-
-  // initialize DAC1  the lines marked useless will be removed. This is because these variables are not used by AD5791_SetRegisterValue or AD5791_SetRegisterValue
-  // volt_start=250000;//scan from 5V
-  // dac1.initializeDac(oldCtrl_c); // again???
-  
-  // Serial.println("initialized");
-  // delay(1000);
 }
+
+#pragma region old_variables 
 
 int engage = 0; //switch involved in tranfer between scan and feedback
 
@@ -234,18 +235,20 @@ float refladd = 0;
 int reflindex = 0;
 float reflmean = 0;
 
+#pragma endregion
+
 SerialCommand command;
 
 void zeroDac1(String requestId){
-  dac1.setOutputVoltage(dac1.voltageLowerLimit);
-  dac2.setOutputVoltage(dac2.voltageLowerLimit);
+  dac1.setOutputVoltage(dac1.getVoltageLowerLimit());
+  dac2.setOutputVoltage(dac2.getVoltageLowerLimit());
 
   dac1.zeroDac(400);
   dac2.zeroDac(100);
 
   delay(1);
-  dac1.setOutputVoltage(dac1.voltageLowerLimit);
-  dac2.setOutputVoltage(dac2.voltageLowerLimit);
+  dac1.setOutputVoltage(dac1.getVoltageUpperLimit());
+  dac2.setOutputVoltage(dac2.getVoltageUpperLimit());
 
   SerialCommandStatus status;
   status.isOk = true;
@@ -267,7 +270,19 @@ void loop()
         //   getMacAddress(command.requestId);
         //   break;
         case 'z':
-          zeroDac1(command.requestId);
+          zeroCommand.Execute(command.requestId);
+          break;
+        case 'u':
+          upCommand.Execute(command.requestId);
+          break;
+        case 'd':
+          downCommand.Execute(command.requestId);
+          break;
+        case 's':
+          scanCommand.scan.setSlopeTime(2000);
+          scanCommand.scan.setLowerScanLimit(-10000);
+          scanCommand.scan.setUpperScanLimit(10000);
+          scanCommand.Execute(command.requestId);
           break;
         default:
           SendError("unkown command");
@@ -280,5 +295,12 @@ void loop()
     }
     // incomingByte = Serial.read();  // will not be -1
     //Serial.println(incomingByte);   //  l=108; s=115;  z=122
+  }
+
+  // these are the commands that require to be ran in the loop, i.e. scan
+  switch(command.commandLetter){
+    case 's':
+      scan_dac_1.setScanVoltage();
+      break;
   }
 }

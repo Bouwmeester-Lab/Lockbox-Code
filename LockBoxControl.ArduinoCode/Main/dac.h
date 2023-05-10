@@ -3,6 +3,7 @@
 
 #include "ad5791.h"
 #include <SPI.h>
+#include "utilities.h"
 
 // #define NO_LINCOMP 0x0
 // #define LINCOMP_10_12_V  0x9
@@ -56,22 +57,34 @@ public:
 class DAC
 {
 private:
-    long calculateLineVoltage(unsigned long current_millis, long target_voltage, long starting_voltage, unsigned long milliseconds_to_reach_target, unsigned long starting_millis){
-        return (long)((double)(target_voltage - starting_voltage)/milliseconds_to_reach_target*(current_millis - starting_millis) + starting_voltage);
-    }
-public:
+    // full 20 bit range.
+    long voltageUpperLimit = 1048575;
+    long voltageLowerLimit = 0;
+
+    long currentVoltage;
+
     uint8_t reset;
     uint8_t clear;
     uint8_t sync;
     uint8_t ldac;
+public:
+    
 
-    long currentVoltage;
+    
 
     DACConfiguration configuration = DACConfiguration();
 
-    // full 20 bit range.
-    long voltageUpperLimit = 1048575;
-    long voltageLowerLimit = 0;
+    long getVoltageUpperLimit(){
+      return voltageUpperLimit;
+    }
+
+    long getVoltageLowerLimit(){
+      return voltageLowerLimit;
+    }
+
+    long getCurrentVoltage(){
+      return currentVoltage;
+    }
 
     /// This sets the dac to accept negative values for the input registry. The MSB is the sign bit, and the rest indicate the number. As such 0 is the actual 0V (if VREFN = - VREFP),
     /// and the upper limit is VREFP and the lower limit is VREFN.
@@ -101,9 +114,13 @@ public:
     // sets the output voltage of the dac by setting the input registry. Make sure to provide a value correspoding to the binary or two's complement mode selected during configuration of the dac.
     // if the dac is configured to use binary values, then any value between 0 and 2^20-1 is ok.
     // if the dac is configured to use twos complement mode, then any value between -524287 and 524287 are allowed.
-    void setOutputVoltage(long registryValue){
+    bool setOutputVoltage(long registryValue){
+      if(registryValue <= voltageUpperLimit && registryValue >= voltageLowerLimit){
         currentVoltage = registryValue;
         AD5791_SetRegisterValue(sync, AD5791_REG_DAC, registryValue);
+        return true;
+      }
+      return false;
     }
 
     /// Sets up the pins of the dac by configuring the arduino pins as outputs and setting the pins for normal usage of the dac.
@@ -157,6 +174,7 @@ public:
         #endif
 
         setControlRegister(registerValue);
+        zeroDac(10);
     }
 
     void setControlRegister(long registerValue){
@@ -187,7 +205,7 @@ public:
 
         while(!reachedZero){
             previousVoltage = outputVoltage;
-            outputVoltage = calculateLineVoltage(micros(), targetVoltage, startingVoltage, slew_time, startingTime);
+            outputVoltage = Utilities::calculateLineVoltage(micros(), targetVoltage, startingVoltage, slew_time, startingTime);
 
             setOutputVoltage(outputVoltage);
 
@@ -210,6 +228,14 @@ public:
                 reachedZero = true;
             }
         }
+    }
+
+    bool down(unsigned long step_size){
+      return setOutputVoltage(currentVoltage - step_size);
+    }
+
+    bool up(unsigned long step_size){
+      return setOutputVoltage(currentVoltage + step_size);
     }
 
 
