@@ -27,20 +27,6 @@
 // pin definitions
 DAC dac1(A0, A1, A2, A3);
 DAC dac2(A4, A5, A6, A7);
-// const uint8_t reset1 = A0;
-// const uint8_t clr1   = A1;
-// const uint8_t ldac1  = A2;
-// const uint8_t sync1  = A3;
-
-// const uint8_t reset2 = A4;
-// const uint8_t clr2   = A5;
-// const uint8_t ldac2  = A6;
-// const uint8_t sync2  = A7;
-
-// uint8_t reset = reset1;
-// uint8_t clr   = clr1;
-// uint8_t ldac  = ldac1;
-// uint8_t sync  = sync1;
 
 // constants frequencies
 
@@ -157,8 +143,6 @@ void setup()
   
   myTimer.begin(flagpost, Tsample); //reset flag to true every Tsample
   delay(1000);
-
-  
   
   AC_ampl_bits = max_bits*ampl/5;
   volt_start = AC_ampl_bits;
@@ -239,23 +223,6 @@ float reflmean = 0;
 
 SerialCommand command;
 
-void zeroDac1(String requestId){
-  dac1.setOutputVoltage(dac1.getVoltageLowerLimit());
-  dac2.setOutputVoltage(dac2.getVoltageLowerLimit());
-
-  dac1.zeroDac(400);
-  dac2.zeroDac(100);
-
-  delay(1);
-  dac1.setOutputVoltage(dac1.getVoltageUpperLimit());
-  dac2.setOutputVoltage(dac2.getVoltageUpperLimit());
-
-  SerialCommandStatus status;
-  status.isOk = true;
-  status.requestId = requestId;
-  status.sendThroughSerial();
-}
-
 void loop() 
 { 
   if (Serial.available())
@@ -266,9 +233,11 @@ void loop()
 
     if(command.isOk){
       switch(command.commandLetter){
-        // case 'm':
-        //   getMacAddress(command.requestId);
-        //   break;
+        #ifdef TEENSY4_1
+        case 'm':
+          getMacAddress(command.requestId);
+          break;
+        #endif
         case 'z':
           zeroCommand.Execute(command.requestId);
           break;
