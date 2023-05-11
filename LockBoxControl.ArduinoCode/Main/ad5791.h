@@ -56,7 +56,8 @@ AD5791_type act_device;
 
 
 
-const auto ad5791_settings = SPISettings(12000000, MSBFIRST, SPI_MODE2);
+const auto ad5791_read_settings = SPISettings(16000000, MSBFIRST, SPI_MODE2);
+const auto ad5791_write_settings = SPISettings(34000000, MSBFIRST, SPI_MODE2);
 
 long AD5791_SetRegisterValue(uint8_t syncPort, unsigned char registerAddress, long registerValue) {
   byte writeCommand[3] = {0, 0, 0};
@@ -80,7 +81,7 @@ long AD5791_SetRegisterValue(uint8_t syncPort, unsigned char registerAddress, lo
   Serial.println(writeCommand[2], BIN);
   #endif
 
-  SPI.beginTransaction(ad5791_settings); // begin the SPI transaction with the settings for the AD5791
+  SPI.beginTransaction(ad5791_write_settings); // begin the SPI transaction with the settings for the AD5791
 
   digitalWrite(syncPort,LOW); // select which dac to update.
 
@@ -101,7 +102,7 @@ long AD5791_GetRegisterValue(uint8_t syncPort, unsigned char registerAddress) {
   // char status = 0; not used
   registerWord[0] = (AD5791_READ | AD5791_ADDR_REG(registerAddress)) >> 16;
   
-  SPI.beginTransaction(ad5791_settings);
+  SPI.beginTransaction(ad5791_read_settings);
 
   digitalWrite(syncPort,LOW);
  

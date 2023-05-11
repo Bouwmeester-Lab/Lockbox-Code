@@ -17,6 +17,8 @@
 #include "SerialCommand.h"
 #include "dac.h"
 #include "commands.h"
+#include "SineWave.h"
+#include "SineCommand.h"
 
 // preprocessor definitions
 #define Tsample 30 //sample time for timer in microseconds
@@ -128,6 +130,9 @@ ZeroCommand zeroCommand('z', &dac1, &dac2, 100);
 Scan scan_dac_1(dac1);
 ScanCommand scanCommand('s', scan_dac_1);
 
+SineWave<333> sineWave(dac1, max_bits*0.1, 0);
+SineCommand<333> sineCommand('w', sineWave);
+
 void setup() 
 {
   pinMode(A8, INPUT);
@@ -171,7 +176,7 @@ void setup()
 
 }
 
-#pragma region old_variables 
+
 
 int engage = 0; //switch involved in tranfer between scan and feedback
 
@@ -219,12 +224,14 @@ float refladd = 0;
 int reflindex = 0;
 float reflmean = 0;
 
-#pragma endregion
-
 SerialCommand command;
+
+long time1 = 0;
+long time2 = 0;
 
 void loop() 
 { 
+  
   if (Serial.available())
   {
     auto c = Serial.readStringUntil('\n');
@@ -253,6 +260,9 @@ void loop()
           scanCommand.scan.setUpperScanLimit(10000);
           scanCommand.Execute(command.requestId);
           break;
+        case 'w':
+          sineCommand.Execute(command.requestId);
+          break;
         default:
           SendError("unkown command");
           break;
@@ -271,5 +281,13 @@ void loop()
     case 's':
       scan_dac_1.setScanVoltage();
       break;
+    case 'w':
+      // time1 = micros();
+      sineWave.setSineWaveVoltage();
+      // time2 = micros();
+      break;
   }
+  
+
+  // Serial.println(time2-time1);
 }
