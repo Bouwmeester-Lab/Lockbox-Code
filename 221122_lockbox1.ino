@@ -72,6 +72,15 @@ float ampl =0.001;//Pk-Pk amplitude of sinewave in Volt
 //Scaling is a bit off. Accurate for 0.5-2.0V, 0.025 will give 40mV
 const int sinetablesize = (samplefreq -(samplefreq%freq))/freq;
 static int sinetable[36][sinetablesize]={};
+// the sinetable is used to approximate a sin. The first array index gives you a phase shift. I.e. sin(x + phi) where phi is in rads,
+// but in the above code the shift is in tens of degrees, so 10 -> 100 degrees for phi transformed in radians.
+
+// the second index represents the value of sin at different intervals in the sin.
+// sin(wt) = sin(2*pi*f*t) = sin(2*pi*f*Ts*k) where Ts is the sampling time. N = floor(1/(f*Ts)) is the size of the sinetable.
+
+// in the new code I want to simplify this. I am not interested in saving time in doing w*t this is maybe two cycles of the cpu max, at 600 MHz!
+// the hard thing is the sine, and even that might no longer be an issue in the new teensy
+
 
 float AC_ampl_bits = 0;
 float dV = 0;
