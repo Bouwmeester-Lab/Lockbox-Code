@@ -1,4 +1,5 @@
 #define TEENSY4_0 // set the teensy used.
+// #define DEBUG // set this to get debug info in the serial screen.
 
 #include <string.h>
 #include <math.h>
@@ -54,11 +55,11 @@ UpCommand upCommand('u', &dac2, 20000);
 DownCommand downCommand('d', &dac2, 20000);
 ZeroCommand zeroCommand('z', &dac1, &dac2, 100);
 
-Scan scan_dac_1(dac1);
-ScanCommand scanCommand('s', scan_dac_1);
+ScanWaveform scan(dac1.getVoltageLowerLimit(), dac1.getVoltageUpperLimit());
+ScanCommand scanCommand('s', scan);
 
 long max_bits = 524287;
-SineWave<333> sineWave(dac1, max_bits*0.1, 0);
+SineWaveform<333> sineWave(max_bits*0.1, 0);
 SineCommand<333> sineCommand('w', sineWave);
 
 void setup() 
@@ -122,8 +123,9 @@ void loop()
           break;
         case 's':
           scanCommand.scan.setSlopeTime(2000);
-          scanCommand.scan.setLowerScanLimit(-10000);
+          scanCommand.scan.setLowerScanLimit(0);
           scanCommand.scan.setUpperScanLimit(10000);
+          scanCommand.scan.initializeScan(dac1);
           scanCommand.Execute(command.requestId);
           break;
         case 'w':
@@ -144,11 +146,11 @@ void loop()
   // these are the commands that require to be ran in the loop, i.e. scan
   switch(command.commandLetter){
     case 's':
-      scan_dac_1.setScanVoltage();
+      dac1.setWaveformVoltage(scan);
       break;
     case 'w':
       // time1 = micros();
-      sineWave.setSineWaveVoltage();
+      dac1.setWaveformVoltage(sineWave);
       // time2 = micros();
       break;
   }

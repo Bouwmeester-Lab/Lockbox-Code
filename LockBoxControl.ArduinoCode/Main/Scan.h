@@ -3,11 +3,12 @@
 
 #include "commands.h"
 #include "dac.h"
+#include "Waveform.h"
 
-class Scan
+class ScanWaveform : public Waveform
 {
 private:
-  DAC& dac;
+
   long slope_time = 1000; // in microseconds
 
   long lowerScanLimit;
@@ -23,14 +24,14 @@ private:
 
 
 public:
-  Scan(DAC& dac, long slope_time = 1000) : dac(dac)
+  ScanWaveform(long lowerScanLimit, long upperScanLimit, long slope_time = 1000)
   {
     this->slope_time = slope_time;
 
-    this->lowerScanLimit = dac.getVoltageLowerLimit();
+    this->lowerScanLimit = lowerScanLimit;
     
 
-    this->upperScanLimit = dac.getVoltageUpperLimit();
+    this->upperScanLimit = upperScanLimit;
   }
 
   void setSlopeTime(long slope_time){
@@ -41,7 +42,7 @@ public:
     lowerScanLimit = limit;
   }
 
-  void setLowerScanLimit(){
+  void setLowerScanLimit(DAC& dac){
     lowerScanLimit = dac.getVoltageLowerLimit();
   }
 
@@ -49,23 +50,32 @@ public:
     upperScanLimit = limit;
   }
 
-  void setUpperScanLimit(){
+  void setUpperScanLimit(DAC& dac){
     upperScanLimit = dac.getVoltageUpperLimit();
   }
 
-  void initializeScan(){
-    startingVoltage = dac.getCurrentVoltage();
+  void initializeScan(DAC& dac){
+    initializeScan(dac.getCurrentVoltage());
+  }
+
+  void initializeScan(long initialVoltage){
+    startingVoltage = initialVoltage;
 
     #ifdef DEBUG
     Serial.println(lowerScanLimit);
-    Serial.println(dac.getVoltageLowerLimit());
+    //Serial.println(dac.getVoltageLowerLimit());
     #endif
     startingTime = micros();
   }
 
   
-  void setScanVoltage(){
+  void setScanVoltage(DAC& dac){
     dac.setOutputVoltage(getScanVoltage());
+  }
+
+  long calculateValue() override
+  {
+    return getScanVoltage();
   }
 
   long getScanVoltage(){
@@ -83,12 +93,12 @@ public:
     previousVoltage = outputVoltage;
     outputVoltage = Utilities::calculateLineVoltage(currentTime, targetVoltage, startingVoltage, slope_time, startingTime);
 
-    if(abs(outputVoltage - targetVoltage) < abs(previousVoltage - outputVoltage)){
+    if(abs(outputVoltage - targetVoltage) < abs(previousVoltage - outputVoltage) || outputVoltage == targetVoltage){
       // reached the bottom of the scan
       negativeSlope = !negativeSlope; // invert the slope
       outputVoltage = targetVoltage;
       //reset the scan
-      initializeScan();
+      initializeScan(outputVoltage);
     }
     #ifdef DEBUG
     Serial.printf("Target voltage: %i, Output Voltage: %i, Starting Time: %i, Current Time: %i\n", targetVoltage, outputVoltage, startingTime, currentTime);
@@ -110,12 +120,12 @@ protected:
     status.requestId = requestId;
     status.isOk = true;
 
-    scan.initializeScan();
+    
     return status;    
   }
 public:
-  Scan& scan;
-  ScanCommand(char commandLetter, Scan& scan) : Command(commandLetter), scan(scan)
+  ScanWaveform& scan;
+  ScanCommand(char commandLetter, ScanWaveform& scan) : Command(commandLetter), scan(scan)
   {
   }
 };

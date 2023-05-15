@@ -4,6 +4,7 @@
 #include "ad5791.h"
 #include <SPI.h>
 #include "utilities.h"
+#include "Waveform.h"
 
 // #define NO_LINCOMP 0x0
 // #define LINCOMP_10_12_V  0x9
@@ -236,6 +237,14 @@ public:
 
     bool up(unsigned long step_size){
       return setOutputVoltage(currentVoltage + step_size);
+    }
+
+    bool setWaveformVoltage(Waveform& waveform){
+      return setOutputVoltage(waveform.calculateValue());
+    }
+
+    bool setWaveformVoltage(Waveform& waveform1, Waveform& waveform2){
+      return setOutputVoltage(waveform1.calculateValue() + waveform2.calculateValue());
     }
 
 

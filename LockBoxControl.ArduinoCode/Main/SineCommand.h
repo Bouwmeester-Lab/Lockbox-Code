@@ -22,15 +22,15 @@ protected:
   }
 public:
 
-  SineWave<PERIOD>& sineWave;
+  SineWaveform<PERIOD>& sineWave;
   
-  SineCommand(char commandLetter, SineWave<PERIOD>& sineWave);
+  SineCommand(char commandLetter, SineWaveform<PERIOD>& sineWave);
 };
 
 
 
 template <long PERIOD>
-inline SineCommand<PERIOD>::SineCommand(char commandLetter, SineWave<PERIOD> &sineWave)  : Command(commandLetter), sineWave(sineWave)
+inline SineCommand<PERIOD>::SineCommand(char commandLetter, SineWaveform<PERIOD> &sineWave)  : Command(commandLetter), sineWave(sineWave)
 {
 }
 
