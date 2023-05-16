@@ -112,7 +112,10 @@ inline void ResonanceLock<PERIOD>::lock(SerialCommand& command)
             resonanceFound = false;
             resetScan();
         }
-        long correction = pid.calculateCorrection(sineWave.calculateValue()*reflectionValue);
+        // long time1 = micros();
+        long correction = pid.calculateCorrection(sineWave.calculateValue()*reflectionValue);\
+        // long time2 = micros();
+        // Serial.printf("It took %i us to calculate the correction of %i\n", time2 - time1, correction);
         dac.setOutputVoltage(resonanceVoltage, correction, sineWave);
     }
 
