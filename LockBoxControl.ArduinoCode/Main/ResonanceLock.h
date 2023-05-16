@@ -90,7 +90,9 @@ inline void ResonanceLock<PERIOD>::lock(SerialCommand& command)
 
         if(reflectionValue < lockThreshold / 2)
         {
+            #ifdef DEBUG
             Serial.println(reflectionValue);
+            #endif
             resonanceFound = true;
             // found the resonance
             resonanceVoltage = dac.getCurrentVoltage();
