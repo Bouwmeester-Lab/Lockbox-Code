@@ -1,7 +1,7 @@
 #ifndef PID_H
 #define PID_H
 
-template <typename TCorrection>
+
 class PID
 {
 private:
@@ -9,12 +9,21 @@ private:
     float P;
     float I;
     float D;
-    float setPoint;
+    float setPoint = 0;
+    float oldError = 0;
+
+    float errorSum = 0;
+    float integralScaling = 100000;
+
+    float integralFeedbackUpperLimit = 400000;
+    float integralFeedbackLowerLimit = -400000;
 public:
     PID(/* args */);
+    PID(float P, float I, float D, float setPoint);
+    PID(float P, float I, float D);
     ~PID();
 
-    TCorrection calculateCorrection(float error);
+    long calculateCorrection(float error);
 };
 
 

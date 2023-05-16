@@ -21,6 +21,8 @@
 #include "SineWave.h"
 #include "SineCommand.h"
 #include "Scan.h"
+#include "pid.h"
+#include "ResonanceLock.h"
 
 // preprocessor definitions
 #define Tsample 30 //sample time for timer in microseconds
@@ -49,6 +51,9 @@ DAC dac2(A4, A5, A6, A7);
 //float I = 2.0;  //320 -> 250 Hz in ZI LPF min; 32 -> 15 Hz in ZI LPF min
 //float D = 0.05; //0.15
 
+// variables
+const long initial_scan_time = 1'000'000;
+const long fine_scan_time = 1'000'000;
 
 // commands
 UpCommand upCommand('u', &dac2, 20000);
@@ -59,12 +64,15 @@ ScanWaveform scan(dac1.getVoltageLowerLimit(), dac1.getVoltageUpperLimit());
 ScanCommand scanCommand('s', scan);
 
 long max_bits = 524287;
-SineWaveform<333> sineWave(max_bits*0.1, 0);
+SineWaveform<333> sineWave(max_bits*0.01, 0);
 SineCommand<333> sineCommand('w', sineWave);
+
+PID pid(1.0, 0.1, 0);
+ResonanceLock<333> resonanceLock(dac1, sineWave, pid, A8);
 
 void setup() 
 {
-  pinMode(A8, INPUT);
+  // pinMode(A8, INPUT);
 
   Serial.begin(38400); // the value inside begin doesn't matter in the teensies.
   SPI.begin(); // initialize the SPI communicaton
@@ -82,12 +90,17 @@ void setup()
   // dac1.configuration.tristate = false;
   dac1.configuration.defaultConfiguration();
   dac1.set2ComplementMode();
+  dac1.setSafetyLimits(500000, 100);
   dac1.initializeDac();
 
   
   dac2.configuration.defaultConfiguration();
   dac2.set2ComplementMode();
+  dac2.setSafetyLimits(500000, 100);
   dac2.initializeDac();
+
+  resonanceLock.setLockThreshold(1600);
+  resonanceLock.initialize(initial_scan_time, fine_scan_time);
 
 }
 
@@ -131,6 +144,10 @@ void loop()
         case 'w':
           sineCommand.Execute(command.requestId);
           break;
+        case 'l':
+          // lock
+          resonanceLock.replyToCommand(command);
+          break;
         default:
           SendError("unkown command");
           break;
@@ -152,6 +169,9 @@ void loop()
       // time1 = micros();
       dac1.setWaveformVoltage(sineWave);
       // time2 = micros();
+      break;
+    case 'l':
+      resonanceLock.lock(command);
       break;
   }
   

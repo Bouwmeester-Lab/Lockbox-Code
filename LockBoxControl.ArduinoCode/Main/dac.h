@@ -12,6 +12,38 @@
 // #define LINCOMP_16_19_V 0xB
 // #define LINCOMP_19_20_V 0xC
 
+class VoltageLimits{
+private:
+  long upperLimit = 0;
+  long lowerLimit = 0;
+public:
+  VoltageLimits(long upperLimit, long lowerLimit)
+  {
+    setLowerLimit(lowerLimit);
+    setUpperLimit(upperLimit);
+  }
+
+  VoltageLimits(){}
+
+  ~VoltageLimits(){}
+
+  void setUpperLimit(long limit){
+    upperLimit = limit;
+  }
+
+  void setLowerLimit(long limit){
+    lowerLimit = limit;
+  }
+
+  long getUpperLimit(){
+    return upperLimit;
+  }
+
+  long getLowerLimit(){
+    return lowerLimit;
+  }
+};
+
 class DACConfiguration{
 public:
   static const unsigned long NO_LINCOMP = 0x0;
@@ -59,15 +91,31 @@ class DAC
 {
 private:
     // full 20 bit range.
-    long voltageUpperLimit = 1048575;
-    long voltageLowerLimit = 0;
-
+    VoltageLimits maxRangeLimit = VoltageLimits(1048575, 0);
+    // allows the user to set a safety range which is smaller than the range allowed by the dac.
+    VoltageLimits safetyRangeLimit = VoltageLimits(1048575, 0);
+    
     long currentVoltage;
+    long offset = 0;
 
     uint8_t reset;
     uint8_t clear;
     uint8_t sync;
     uint8_t ldac;
+
+    void capSafetyRange(){
+      if(safetyRangeLimit.getUpperLimit() > maxRangeLimit.getUpperLimit()){
+        safetyRangeLimit.setUpperLimit(maxRangeLimit.getUpperLimit());
+      }
+      if(safetyRangeLimit.getLowerLimit() < maxRangeLimit.getLowerLimit()){
+        safetyRangeLimit.setLowerLimit(maxRangeLimit.getLowerLimit());
+      }
+    }
+
+    void matchSafetyRange(){
+      safetyRangeLimit.setUpperLimit(maxRangeLimit.getUpperLimit());
+      safetyRangeLimit.setLowerLimit(maxRangeLimit.getLowerLimit());
+    }
 public:
     
 
@@ -75,31 +123,68 @@ public:
 
     DACConfiguration configuration = DACConfiguration();
 
+    void setSafetyLimits(long upperLimit, long lowerLimit){
+      safetyRangeLimit.setLowerLimit(lowerLimit);
+      safetyRangeLimit.setUpperLimit(upperLimit);
+    }
+
     long getVoltageUpperLimit(){
-      return voltageUpperLimit;
+      if(safetyRangeLimit.getUpperLimit() < maxRangeLimit.getUpperLimit()){
+        return safetyRangeLimit.getUpperLimit();
+      }
+      return maxRangeLimit.getUpperLimit();
     }
 
     long getVoltageLowerLimit(){
-      return voltageLowerLimit;
+      if(safetyRangeLimit.getLowerLimit() > maxRangeLimit.getLowerLimit()){
+        return safetyRangeLimit.getLowerLimit();
+      }
+      return maxRangeLimit.getLowerLimit();
     }
 
     long getCurrentVoltage(){
       return currentVoltage;
     }
 
+    void setOffset(long offset){
+      this->offset = offset;
+    }
+
+    VoltageLimits getSafetyRangeVoltageLimits(){
+      return safetyRangeLimit;
+    }
+
+
     /// This sets the dac to accept negative values for the input registry. The MSB is the sign bit, and the rest indicate the number. As such 0 is the actual 0V (if VREFN = - VREFP),
     /// and the upper limit is VREFP and the lower limit is VREFN.
-    void set2ComplementMode(){
-      voltageUpperLimit = 524287;
-      voltageLowerLimit = -524287;
+    void set2ComplementMode(bool resetSafetyRange = true){
+      maxRangeLimit.setUpperLimit(524287);
+      maxRangeLimit.setLowerLimit(-524287);
+      
+      if(resetSafetyRange){
+        matchSafetyRange();
+      }
+      else{
+        capSafetyRange();
+      }
+      
+      
 
       // change the configuration
       configuration.binary = false;
     }
     /// This sets the dac to accept binary numbers in such a way that a voltage of 0 is VREFN and a voltage of 2^20 - 1 is VREFP.
-    void setBinaryMode(){
-      voltageUpperLimit = 1048575;
-      voltageLowerLimit = 0;
+    void setBinaryMode(bool resetSafetyRange = true){
+
+      maxRangeLimit.setUpperLimit(1048575);
+      maxRangeLimit.setLowerLimit(0);
+
+      if(resetSafetyRange){
+        matchSafetyRange();
+      }
+      else{
+        capSafetyRange();
+      }
       //change the configuration;
       configuration.binary = true;
     }
@@ -116,7 +201,10 @@ public:
     // if the dac is configured to use binary values, then any value between 0 and 2^20-1 is ok.
     // if the dac is configured to use twos complement mode, then any value between -524287 and 524287 are allowed.
     bool setOutputVoltage(long registryValue){
-      if(registryValue <= voltageUpperLimit && registryValue >= voltageLowerLimit){
+      
+      registryValue += offset; //apply any DC offset if any is set.
+
+      if(registryValue <= getVoltageUpperLimit() && registryValue >= getVoltageLowerLimit()){
         currentVoltage = registryValue;
         AD5791_SetRegisterValue(sync, AD5791_REG_DAC, registryValue);
         return true;
@@ -184,19 +272,31 @@ public:
 
     //zero
     // slew_time is in microseconds
-    void zeroDac(unsigned long slew_time = 1000){
+    // trueZero -> zeros to 0V, if false zeros at the middle of the allowed voltage range (default)
+    void zeroDac(unsigned long slew_time = 1000, bool trueZero = false){
         unsigned long startingTime = micros();
 
         long startingVoltage = currentVoltage;
 
         long targetVoltage;
 
-        if(configuration.binary){
-            targetVoltage = (voltageUpperLimit - voltageLowerLimit)/2;
+        if(trueZero)
+        {
+          if(configuration.binary)
+          {
+            targetVoltage = (maxRangeLimit.getUpperLimit() + maxRangeLimit.getLowerLimit())/2;
+          }
+          else
+          {
+              targetVoltage = 0;
+          }
         }
-        else{
-            targetVoltage = 0;
+        else
+        {
+          targetVoltage = (getVoltageUpperLimit() + getVoltageLowerLimit())/2;
+          // Serial.println(targetVoltage);
         }
+        
          
 
         bool reachedZero = false;
@@ -245,6 +345,10 @@ public:
 
     bool setWaveformVoltage(Waveform& waveform1, Waveform& waveform2){
       return setOutputVoltage(waveform1.calculateValue() + waveform2.calculateValue());
+    }
+
+    bool setOutputVoltage(long voltage1, long voltage2, Waveform& waveform){
+      return setOutputVoltage(voltage1 + voltage2 + waveform.calculateValue());
     }
 
 

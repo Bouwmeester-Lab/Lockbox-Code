@@ -8,10 +8,10 @@ class SerialCommand
 
 public:
   char commandLetter;
-  String requestId;
+  const char* requestId;
 
   bool isOk;
-  String errorMessage;
+  const char* errorMessage;
 
   static SerialCommand serialize(String json){
     // Allocate the JSON document
@@ -26,12 +26,12 @@ public:
     
     if(error){
       status.isOk = false;
-      status.errorMessage = String(error.c_str());
+      status.errorMessage = error.c_str();
     }
     else{
       status.isOk = true;
       status.commandLetter = *(const char*)doc["commandLetter"];
-      status.requestId = String((const char*)doc["requestId"]); // https://arduinojson.org/v6/error/ambiguous-overload-for-operator-equal/
+      status.requestId = (const char*)doc["requestId"]; // https://arduinojson.org/v6/error/ambiguous-overload-for-operator-equal/
     }
 
     return status;
