@@ -135,9 +135,9 @@ void loop()
           downCommand.Execute(command.requestId);
           break;
         case 's':
-          scanCommand.scan.setSlopeTime(2000);
-          scanCommand.scan.setLowerScanLimit(0);
-          scanCommand.scan.setUpperScanLimit(10000);
+          scanCommand.scan.setSlopeTime(initial_scan_time);
+          scanCommand.scan.setLowerScanLimit(dac1.getVoltageLowerLimit());
+          scanCommand.scan.setUpperScanLimit(dac1.getVoltageUpperLimit());
           scanCommand.scan.initializeScan(dac1);
           scanCommand.Execute(command.requestId);
           break;
