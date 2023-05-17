@@ -68,7 +68,7 @@ SineWaveform<333> sineWave(max_bits*0.01, 0);
 SineCommand<333> sineCommand('w', sineWave);
 
 PID pid(1.0, 0.1, 0);
-ResonanceLock<333> resonanceLock(dac1, sineWave, pid, A8);
+ResonanceLock<333> resonanceLock(dac2, dac1, sineWave, pid, A8);
 
 void setup() 
 {
