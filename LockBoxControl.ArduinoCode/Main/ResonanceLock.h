@@ -6,6 +6,7 @@
 #include "SineWave.h"
 #include "pid.h"
 #include "SerialCommand.h"
+#include "LPF2.h"
 
 // period in microseconds
 
@@ -29,6 +30,7 @@ private:
     
     SineWaveform<PERIOD>& sineWave;
     
+    
     PID& pid;
 
     ScanWaveform scan;
@@ -36,6 +38,8 @@ private:
     long fineScanTime;
     long initialScanTime;
     long fineScanWidth = 10000;
+
+    LPF2 lpf = LPF2(15);
     
     void setResonanceVoltage();
     void makeScanFine();
@@ -135,6 +139,9 @@ inline void ResonanceLock<PERIOD>::lock(SerialCommand& command)
         else
         {
             coarseDac.setWaveformVoltage(scan);
+            #ifdef DEBUG
+            Serial.println("scanning coarse dac");
+            #endif
         }
         
         
@@ -142,6 +149,14 @@ inline void ResonanceLock<PERIOD>::lock(SerialCommand& command)
         if(reflectionValue < lockThreshold / 2)
         {
             #ifdef DEBUG
+            Serial.print("Found resonance! ");
+            if(coarseResonanceFound){
+                Serial.println("Fine step with half the threshold.");
+            }
+            else{
+                Serial.println("Coarse step with half the threshold.");
+            }
+            Serial.print("Reflection value is ");
             Serial.println(reflectionValue);
             #endif
 
@@ -159,6 +174,18 @@ inline void ResonanceLock<PERIOD>::lock(SerialCommand& command)
             }
         }
         else if(reflectionValue < lockThreshold){
+            #ifdef DEBUG
+            Serial.print("Found resonance! ");
+            if(coarseResonanceFound){
+                Serial.println("Fine step with the threshold.");
+            }
+            else{
+                Serial.println("Coarse step with the threshold.");
+            }
+            Serial.print("Reflection value is ");
+            Serial.println(reflectionValue);
+            #endif
+
             // found the resonance
             setResonanceVoltage();
             
@@ -173,10 +200,10 @@ inline void ResonanceLock<PERIOD>::lock(SerialCommand& command)
             resetCoarseScan();
         }
         // long time1 = micros();
-        long correction = pid.calculateCorrection(sineWave.calculateValue()*reflectionValue);\
+        long correction = pid.calculateCorrection(-1*lpf.main(sineWave.calculateValue()*reflectionValue));
         // long time2 = micros();
         // Serial.printf("It took %i us to calculate the correction of %i\n", time2 - time1, correction);
-        fineDac.setOutputVoltage(resonanceVoltageFineDac, correction, sineWave);
+        fineDac.setOutputVoltage(resonanceVoltageFineDac, correction);
     }
 
     
