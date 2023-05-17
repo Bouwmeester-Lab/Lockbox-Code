@@ -21,7 +21,7 @@ private:
     int outOfLockReflectionThreshold = 2000;
     
 
-    DAC& dac;
+    DAC& fineDac;
     SineWaveform<PERIOD>& sineWave;
     
     PID& pid;
@@ -35,7 +35,7 @@ private:
      
 public:
 
-    ResonanceLock(DAC& dac, SineWaveform<PERIOD>& sineWaveform, PID& pid, int reflectionPin);
+    ResonanceLock(DAC& fineDac, SineWaveform<PERIOD>& sineWaveform, PID& pid, int reflectionPin);
     void setLockThreshold(int threshold);
     void setOutOfLockReflectionThreshold(int threshold);
 
@@ -46,7 +46,7 @@ public:
 };
 
 template <long PERIOD>
-inline ResonanceLock<PERIOD>::ResonanceLock(DAC& dac, SineWaveform<PERIOD> &sineWaveform, PID& pid, int reflectionPin) : dac(dac), sineWave(sineWaveform), pid(pid), scan(dac.getVoltageLowerLimit(), dac.getVoltageUpperLimit()), reflectionPin(reflectionPin)
+inline ResonanceLock<PERIOD>::ResonanceLock(DAC& fineDac, SineWaveform<PERIOD> &sineWaveform, PID& pid, int reflectionPin) : fineDac(fineDac), sineWave(sineWaveform), pid(pid), scan(fineDac.getVoltageLowerLimit(), fineDac.getVoltageUpperLimit()), reflectionPin(reflectionPin)
 {
 }
 
@@ -85,7 +85,7 @@ inline void ResonanceLock<PERIOD>::lock(SerialCommand& command)
     if(!resonanceFound)
     {
         
-        dac.setWaveformVoltage(scan, sineWave);
+        fineDac.setWaveformVoltage(scan, sineWave);
         
 
         if(reflectionValue < lockThreshold / 2)
@@ -95,11 +95,11 @@ inline void ResonanceLock<PERIOD>::lock(SerialCommand& command)
             #endif
             resonanceFound = true;
             // found the resonance
-            resonanceVoltage = dac.getCurrentVoltage();
+            resonanceVoltage = fineDac.getCurrentVoltage();
         }
         else if(reflectionValue < lockThreshold){
             // found the resonance
-            resonanceVoltage = dac.getCurrentVoltage();
+            resonanceVoltage = fineDac.getCurrentVoltage();
             
             // make the scan finer
             scan.setLowerScanLimit(resonanceVoltage - fineScanWidth);
@@ -118,7 +118,7 @@ inline void ResonanceLock<PERIOD>::lock(SerialCommand& command)
         long correction = pid.calculateCorrection(sineWave.calculateValue()*reflectionValue);\
         // long time2 = micros();
         // Serial.printf("It took %i us to calculate the correction of %i\n", time2 - time1, correction);
-        dac.setOutputVoltage(resonanceVoltage, correction, sineWave);
+        fineDac.setOutputVoltage(resonanceVoltage, correction, sineWave);
     }
 
     
@@ -137,8 +137,8 @@ template <long PERIOD>
 inline void ResonanceLock<PERIOD>::resetScan()
 {
     // modify the scans used
-    scan.setLowerScanLimit(dac.getVoltageLowerLimit());
-    scan.setUpperScanLimit(dac.getVoltageUpperLimit());
+    scan.setLowerScanLimit(fineDac.getVoltageLowerLimit());
+    scan.setUpperScanLimit(fineDac.getVoltageUpperLimit());
     scan.setSlopeTime(initialScanTime);
 }
 
