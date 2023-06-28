@@ -18,14 +18,19 @@ PID::~PID()
 
 long PID::calculateCorrection(float error)
 {
-    errorSum += (error - setPoint)/integralScaling;
-
-    if(I * errorSum > integralFeedbackUpperLimit || I*errorSum < integralFeedbackLowerLimit)
-    {
-        errorSum = 0;
-    }
-
     auto correction = P * (error - setPoint) + I * errorSum + D * (error - oldError);
+
+    if(correction > feedbackUpperLimit){
+        correction = feedbackUpperLimit;
+    }
+    else if (correction < feedbackLowerLimit)
+    {
+        correction = feedbackLowerLimit;
+    }
+    else{
+        errorSum += (error - setPoint)/integralScaling;
+    }
+    
     oldError = error;
 
     return correction;

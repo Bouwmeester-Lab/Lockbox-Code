@@ -15,8 +15,8 @@ private:
     float errorSum = 0;
     float integralScaling = 100000;
 
-    float integralFeedbackUpperLimit = 400000;
-    float integralFeedbackLowerLimit = -400000;
+    float feedbackUpperLimit = 400000;
+    float feedbackLowerLimit = -400000;
 public:
     PID(/* args */);
     PID(float P, float I, float D, float setPoint);

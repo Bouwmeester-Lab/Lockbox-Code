@@ -203,7 +203,7 @@ inline void ResonanceLock<PERIOD>::lock(SerialCommand& command)
         long correction = pid.calculateCorrection(-1*lpf.main(sineWave.calculateValue()*reflectionValue));
         // long time2 = micros();
         // Serial.printf("It took %i us to calculate the correction of %i\n", time2 - time1, correction);
-        fineDac.setOutputVoltage(resonanceVoltageFineDac, correction);
+        fineDac.setOutputVoltage(resonanceVoltageFineDac, correction, sineWave);
     }
 
     

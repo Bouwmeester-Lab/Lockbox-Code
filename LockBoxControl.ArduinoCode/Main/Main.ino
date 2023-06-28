@@ -95,9 +95,14 @@ void setup()
 
   
   dac2.configuration.defaultConfiguration();
-  dac2.set2ComplementMode();
-  dac2.setSafetyLimits(500000, 100);
+  dac2.setBinaryMode();
+  // dac2.setSafetyLimits(500000, 100);
   dac2.initializeDac();
+
+  dac2.setOutputVoltage(0);
+  
+  Serial.println(dac2.getVoltageLowerLimit());
+  Serial.println(dac2.getVoltageUpperLimit());
 
   resonanceLock.setLockThreshold(1600);
   resonanceLock.initialize(initial_scan_time, fine_scan_time);
